@@ -15,12 +15,16 @@ import java.util.Map;
 public class SocketServer {
     public static void main(String[] args) {
         ServerSocket server = null;
+
+        //存储客户端socket
         Map<String, Socket> CLENT_MAP = new HashMap<>();
 
         try {
             //创建服务端socket
             server = new ServerSocket(1024);
             System.out.println("服务启动,等待客户端连接");
+
+            //开启死循环，不停地去监听客户端连接
             while (true) {
                 //获取客户端socket
                 Socket socket = server.accept();

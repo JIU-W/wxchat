@@ -21,7 +21,7 @@ public class SocketClient {
             PrintWriter printWriter = new PrintWriter(outputStream);
             System.out.println("请输入内容");
 
-            //创建线程，用于向服务器发送消息，监听键盘输入
+            //创建一个线程，用于向服务器发送消息，监听键盘输入
             new Thread(() -> {
                 while (true) {
                     Scanner scanner = new Scanner(System.in);
@@ -40,6 +40,7 @@ public class SocketClient {
             InputStream inputStream = socket.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "utf8");
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            //再启动一个线程，用于接收服务器发送的消息
             new Thread(() -> {
                 while (true) {
                     try {
