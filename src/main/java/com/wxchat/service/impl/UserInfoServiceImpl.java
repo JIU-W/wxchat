@@ -258,7 +258,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         //获取tokenUserInfoDto
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(userInfo);
+
         //判断是否登录
+        //从redis获取用户心跳
         Long lastHeartBeat = redisComponet.getUserHeartBeat(tokenUserInfoDto.getUserId());
         if (lastHeartBeat != null) {
             throw new BusinessException("此账号已经在别处登录，请退出后再登录");
@@ -270,6 +272,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         tokenUserInfoDto.setToken(token);
         redisComponet.saveTokenUserInfoDto(tokenUserInfoDto);
 
+        //封装返回给前端的数据
         UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
         userInfoVO.setToken(tokenUserInfoDto.getToken());
         userInfoVO.setAdmin(tokenUserInfoDto.getAdmin());
