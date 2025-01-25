@@ -206,7 +206,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         //查询邮箱是否需要设置靓号
         UserInfoBeauty beautyAccount = this.userInfoBeautyMapper.selectByEmail(email);
-        Boolean useBeautyAccount = null != beautyAccount && BeautyAccountStatusEnum.NO_USE.getStatus().equals(beautyAccount.getStatus());
+        //beautyAccount不为null说明从表user_info_beauty查到了数据，则需要设置靓号。
+        //而如果status为1的话，说明已经在使用了，则不需要再次设置靓号。
+        //beautyAccount的status为0，则需要设置靓号。一般注册账号的时候status肯定是为0的。
+        Boolean useBeautyAccount = null != beautyAccount &&
+                BeautyAccountStatusEnum.NO_USE.getStatus().equals(beautyAccount.getStatus());
         if (useBeautyAccount) {
             userId = UserContactTypeEnum.USER.getPrefix() + beautyAccount.getUserId();
         }
@@ -217,7 +221,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfo.setPassword(StringTools.encodeByMD5(password));
         userInfo.setCreateTime(curDate);
         userInfo.setStatus(UserStatusEnum.ENABLE.getStatus());
-        userInfo.setLastOffTime(curDate.getTime());
+        userInfo.setLastOffTime(curDate.getTime());//注册的时候给个初值，避免后面和"当前时间"比对的时候是一个空值从而比不了。
         this.userInfoMapper.insert(userInfo);
         //更新靓号状态
         if (useBeautyAccount) {
@@ -225,7 +229,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             updateBeauty.setStatus(BeautyAccountStatusEnum.USEED.getStatus());
             this.userInfoBeautyMapper.updateById(updateBeauty, beautyAccount.getId());
         }
-        //创建机器人好友
+        //TODO 创建机器人好友
         //userContactService.addContact4Robot(userId);
     }
 
