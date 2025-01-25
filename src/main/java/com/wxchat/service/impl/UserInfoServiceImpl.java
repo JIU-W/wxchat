@@ -193,7 +193,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         return this.userInfoMapper.deleteByEmail(email);
     }
 
-    @Override
+
     @Transactional(rollbackFor = Exception.class)
     public void register(String email, String nickName, String password) {
         UserInfo userInfo = this.userInfoMapper.selectByEmail(email);
@@ -233,7 +233,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         //userContactService.addContact4Robot(userId);
     }
 
-    @Override
+
     public UserInfoVO login(String email, String password) {
         UserInfo userInfo = this.userInfoMapper.selectByEmail(email);
         if (null == userInfo || !userInfo.getPassword().equals(password)) {
@@ -243,18 +243,20 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new BusinessException("账号已禁用");
         }
 
-        //查询联系人
+        //TODO 查询群组 查询我的联系人
+        /*
         UserContactQuery contactQuery = new UserContactQuery();
         contactQuery.setUserId(userInfo.getUserId());
         contactQuery.setStatusArray(new Integer[]{UserContactStatusEnum.FRIEND.getStatus()});
-        //List<UserContact> contactList = userContactMapper.selectList(contactQuery);
-        //List<String> contactIdList = contactList.stream().map(item -> item.getContactId()).collect(Collectors.toList());
+        List<UserContact> contactList = userContactMapper.selectList(contactQuery);
+        List<String> contactIdList = contactList.stream().map(item -> item.getContactId()).collect(Collectors.toList());
 
         redisComponet.cleanUserContact(userInfo.getUserId());
-        /*if (!contactIdList.isEmpty()) {
+        if (!contactIdList.isEmpty()) {
             redisComponet.addUserContactBatch(userInfo.getUserId(), contactIdList);
         }*/
 
+        //判断是否登录
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(userInfo);
         Long lastHeartBeat = redisComponet.getUserHeartBeat(tokenUserInfoDto.getUserId());
         if (lastHeartBeat != null) {
@@ -272,6 +274,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfoVO;
     }
 
+    /**
+     * 给用户设置TokenUserInfoDto
+     * @param userInfo
+     * @return
+     */
     private TokenUserInfoDto getTokenUserInfoDto(UserInfo userInfo) {
         TokenUserInfoDto tokenUserInfoDto = new TokenUserInfoDto();
         tokenUserInfoDto.setUserId(userInfo.getUserId());
