@@ -256,15 +256,17 @@ public class UserInfoServiceImpl implements UserInfoService {
             redisComponet.addUserContactBatch(userInfo.getUserId(), contactIdList);
         }*/
 
-        //判断是否登录
+        //获取tokenUserInfoDto
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(userInfo);
+        //判断是否登录
         Long lastHeartBeat = redisComponet.getUserHeartBeat(tokenUserInfoDto.getUserId());
         if (lastHeartBeat != null) {
             throw new BusinessException("此账号已经在别处登录，请退出后再登录");
         }
 
         //保存登录信息到redis中
-        String token = StringTools.encodeByMD5(tokenUserInfoDto.getUserId() + StringTools.getRandomString(Constants.LENGTH_20));
+        String token = StringTools.encodeByMD5(tokenUserInfoDto.getUserId() +
+                StringTools.getRandomString(Constants.LENGTH_20));
         tokenUserInfoDto.setToken(token);
         redisComponet.saveTokenUserInfoDto(tokenUserInfoDto);
 
@@ -275,7 +277,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     /**
-     * 给用户设置TokenUserInfoDto
+     * 获取tokenUserInfoDto
      * @param userInfo
      * @return
      */
