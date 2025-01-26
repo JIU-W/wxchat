@@ -93,11 +93,11 @@ public class AccountController extends ABaseController {
     }
 
 
-    /*@RequestMapping(value = "/getSysSetting")
-    @GlobalInterceptor
+    @RequestMapping(value = "/getSysSetting")
+    //@GlobalInterceptor
     public ResponseVO getSysSetting() {
         SysSettingDto sysSettingDto = redisComponet.getSysSetting();
         return getSuccessResponseVO(CopyTools.copy(sysSettingDto, SysSettingVO.class));
-    }*/
+    }
 
 }

@@ -127,6 +127,10 @@ public class RedisComponet {
         redisUtils.set(Constants.REDIS_KEY_SYS_SETTING, sysSettingDto);
     }
 
+    /**
+     * 获取系统设置(管理员需要查询系统设置)
+     * @return
+     */
     public SysSettingDto getSysSetting() {
         SysSettingDto sysSettingDto = (SysSettingDto) redisUtils.get(Constants.REDIS_KEY_SYS_SETTING);
         sysSettingDto = sysSettingDto == null ? new SysSettingDto() : sysSettingDto;
