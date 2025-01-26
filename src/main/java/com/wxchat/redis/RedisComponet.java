@@ -34,14 +34,23 @@ public class RedisComponet {
         return getTokenUserInfoDto(token);
     }
 
+    /**
+     * 保存token信息
+     * @param tokenUserInfoDto
+     */
     public void saveTokenUserInfoDto(TokenUserInfoDto tokenUserInfoDto) {
-        redisUtils.setex(Constants.REDIS_KEY_WS_TOKEN + tokenUserInfoDto.getToken(), tokenUserInfoDto, Constants.REDIS_KEY_EXPIRES_DAY * 2);
-        redisUtils.setex(Constants.REDIS_KEY_WS_TOKEN_USERID + tokenUserInfoDto.getUserId(), tokenUserInfoDto.getToken(), Constants.REDIS_KEY_EXPIRES_DAY * 2);
+        //以token为key，保存tokenUserInfoDto到redis中
+        redisUtils.setex(Constants.REDIS_KEY_WS_TOKEN + tokenUserInfoDto.getToken(), tokenUserInfoDto,
+                Constants.REDIS_KEY_EXPIRES_DAY * 2);
+        //以userId为key，保存token到redis中
+        //因为登录之后在传输过程中很多情况都拿不到token，而拿得到userId，
+        //我们就可以先根据userId获取token，再根据token获取tokenUserInfoDto(用户信息)
+        redisUtils.setex(Constants.REDIS_KEY_WS_TOKEN_USERID + tokenUserInfoDto.getUserId(),
+                tokenUserInfoDto.getToken(), Constants.REDIS_KEY_EXPIRES_DAY * 2);
     }
 
     /**
      * 清除token信息
-     *
      * @param userId
      */
     public void cleanUserTokenByUserId(String userId) {

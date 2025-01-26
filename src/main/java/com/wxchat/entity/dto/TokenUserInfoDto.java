@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 
 /**
- * @description 用户信息(包括token信息)：(存储在redis)
+ * @description 用户信息(包括token信息)：(存储在服务端redis)
  * @author JIU-W
  * @date 2025-01-26
  * @version 1.0
@@ -49,4 +49,5 @@ public class TokenUserInfoDto implements Serializable {
     public void setAdmin(Boolean admin) {
         this.admin = admin;
     }
+
 }

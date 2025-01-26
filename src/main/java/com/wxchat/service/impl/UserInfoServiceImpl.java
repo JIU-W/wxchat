@@ -266,14 +266,14 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new BusinessException("此账号已经在别处登录，请退出后再登录");
         }
 
-        //保存登录信息到redis中
         //生成token
         String token = StringTools.encodeByMD5(tokenUserInfoDto.getUserId() +
                 StringTools.getRandomString(Constants.LENGTH_20));
         tokenUserInfoDto.setToken(token);
+        //保存用户登录信息到redis中
         redisComponet.saveTokenUserInfoDto(tokenUserInfoDto);
 
-        //封装返回给前端的数据
+        //封装返回给前端的用户信息
         UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
         userInfoVO.setToken(tokenUserInfoDto.getToken());
         userInfoVO.setAdmin(tokenUserInfoDto.getAdmin());
