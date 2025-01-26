@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 
 /**
- * 登录时返回给前端的用户信息(包括token信息)
+ * 登录时返回给前端的用户信息(包括token信息)：用于在客户端展示
  */
 public class UserInfoVO implements Serializable {
 
