@@ -222,6 +222,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfo.setCreateTime(curDate);
         userInfo.setStatus(UserStatusEnum.ENABLE.getStatus());
         userInfo.setLastOffTime(curDate.getTime());//注册的时候给个初值，避免后面和"当前时间"比对的时候是一个空值从而比不了。
+        userInfo.setJoinType(JoinTypeEnum.APPLY.getType());
         this.userInfoMapper.insert(userInfo);
         //更新靓号状态
         if (useBeautyAccount) {
