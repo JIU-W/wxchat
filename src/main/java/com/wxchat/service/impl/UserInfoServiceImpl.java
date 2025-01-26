@@ -243,7 +243,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new BusinessException("账号已禁用");
         }
 
-        //TODO 查询群组 查询我的联系人
+        //TODO 查询我的群组 查询我的联系人
         /*
         UserContactQuery contactQuery = new UserContactQuery();
         contactQuery.setUserId(userInfo.getUserId());
