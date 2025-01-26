@@ -267,6 +267,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
 
         //保存登录信息到redis中
+        //生成token
         String token = StringTools.encodeByMD5(tokenUserInfoDto.getUserId() +
                 StringTools.getRandomString(Constants.LENGTH_20));
         tokenUserInfoDto.setToken(token);

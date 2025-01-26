@@ -4,6 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 
+/**
+ * @description 用户信息(包括token信息)：(存储在redis)
+ * @author JIU-W
+ * @date 2025-01-26
+ * @version 1.0
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TokenUserInfoDto implements Serializable {
     private static final long serialVersionUID = -6910208948981307451L;
