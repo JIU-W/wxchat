@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.Mapping;
 import java.lang.annotation.*;
 
 /**
- * 自定义注解：拦截器注解
+ * 自定义注解：用于登录拦截校验
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE}) //作用目标: 方法上
+@Retention(RetentionPolicy.RUNTIME)             //运行时调用
 @Documented
 @Mapping
 public @interface GlobalInterceptor {

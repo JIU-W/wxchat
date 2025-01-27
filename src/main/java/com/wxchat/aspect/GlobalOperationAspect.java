@@ -20,6 +20,12 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 
+/**
+ * @description 自定义AOP切面
+ * @author JIU-W
+ * @date 2025-01-28
+ * @version 1.0
+ */
 @Component("operationAspect")
 @Aspect
 public class GlobalOperationAspect {
