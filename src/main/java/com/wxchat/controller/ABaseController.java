@@ -66,4 +66,5 @@ public class ABaseController {
         String token = request.getHeader("token");
         redisUtils.setex(Constants.REDIS_KEY_WS_TOKEN + token, tokenUserInfoDto, Constants.REDIS_KEY_EXPIRES_DAY * 2);
     }
+
 }
