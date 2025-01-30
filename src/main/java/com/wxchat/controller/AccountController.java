@@ -1,6 +1,7 @@
 package com.wxchat.controller;
 
 import com.wf.captcha.ArithmeticCaptcha;
+import com.wxchat.annotation.GlobalInterceptor;
 import com.wxchat.entity.constants.Constants;
 import com.wxchat.entity.dto.SysSettingDto;
 import com.wxchat.entity.vo.ResponseVO;
@@ -94,7 +95,7 @@ public class AccountController extends ABaseController {
 
 
     @RequestMapping(value = "/getSysSetting")
-    //@GlobalInterceptor
+    @GlobalInterceptor
     public ResponseVO getSysSetting() {
         SysSettingDto sysSettingDto = redisComponet.getSysSetting();
         return getSuccessResponseVO(CopyTools.copy(sysSettingDto, SysSettingVO.class));

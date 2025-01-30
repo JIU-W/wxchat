@@ -53,10 +53,14 @@ public class GlobalOperationAspect {
                 checkLogin(interceptor.checkAdmin());
             }
         } catch (BusinessException e) {
+            //捕获异常是为了记录日志，便于调错。
             logger.error("全局拦截器异常", e);
+            //自定义异常，抛出到控制层从而把具体的错误信息展示给前端。
             throw e;
         } catch (Exception e) {
             logger.error("全局拦截器异常", e);
+            //系统的类库异常：抛出到控制层，并且展示统一的错误信息给前端。
+            //(因为系统类库的报错，使用人员是看不懂的，我们自己在日志查看就行)
             throw new BusinessException(ResponseCodeEnum.CODE_500);
         } catch (Throwable e) {
             logger.error("全局拦截器异常", e);

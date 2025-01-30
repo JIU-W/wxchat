@@ -1,5 +1,6 @@
 package com.wxchat.controller;
 
+import com.wxchat.annotation.GlobalInterceptor;
 import com.wxchat.entity.dto.TokenUserInfoDto;
 import com.wxchat.entity.enums.GroupStatusEnum;
 import com.wxchat.entity.enums.MessageTypeEnum;
@@ -51,7 +52,7 @@ public class GroupController extends ABaseController {
      * @return
      */
     @RequestMapping(value = "/saveGroup")
-    //@GlobalInterceptor
+    @GlobalInterceptor
     public ResponseVO saveGroup(HttpServletRequest request, String groupId,
                                 @NotEmpty String groupName, String groupNotice,
                                 @NotNull Integer joinType,
