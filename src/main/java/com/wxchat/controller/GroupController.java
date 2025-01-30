@@ -25,10 +25,10 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * @ClassName GroupController
- * @Description TODO
- * @Author 程序员老罗 https://space.bilibili.com/499388891
- * @Date 2023/12/24 20:04
+ * @description 群组管理
+ * @author JIU-W
+ * @date 2025-01-30
+ * @version 1.0
  */
 @RestController("groupController")
 @RequestMapping("/group")
@@ -41,14 +41,14 @@ public class GroupController extends ABaseController {
     private UserContactService userContactService;
 
     /**
-     * 新增群组，修改群信息
+     * 新增群组，修改群组信息
      * @param request
      * @param groupId
      * @param groupName
      * @param groupNotice
      * @param joinType
-     * @param avatarFile
-     * @param avatarCover
+     * @param avatarFile 头像图片
+     * @param avatarCover 客户端electron使用ffmpeg根据avatarFile生成的它对应的缩略图。
      * @return
      */
     @RequestMapping(value = "/saveGroup")
