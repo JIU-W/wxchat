@@ -39,7 +39,9 @@ public class GlobalOperationAspect {
     @Before("@annotation(com.wxchat.annotation.GlobalInterceptor)")
     public void interceptorDo(JoinPoint point) {
         try {
+            //获取方法
             Method method = ((MethodSignature) point.getSignature()).getMethod();
+            //获取该方法的注解
             GlobalInterceptor interceptor = method.getAnnotation(GlobalInterceptor.class);
             if (null == interceptor) {
                 return;
@@ -62,14 +64,17 @@ public class GlobalOperationAspect {
         }
     }
 
-    //校验登录
+    //校验登录、是否是管理员
     private void checkLogin(Boolean checkAdmin) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpServletRequest request = ((ServletRequestAttributes)
+                RequestContextHolder.getRequestAttributes()).getRequest();
         String token = request.getHeader("token");
         TokenUserInfoDto tokenUserInfoDto = (TokenUserInfoDto) redisUtils.get(Constants.REDIS_KEY_WS_TOKEN + token);
+        //判断是否登录
         if (tokenUserInfoDto == null) {
             throw new BusinessException(ResponseCodeEnum.CODE_901);
         }
+        //判断是否是管理员
         if (checkAdmin && !tokenUserInfoDto.getAdmin()) {
             throw new BusinessException(ResponseCodeEnum.CODE_404);
         }
