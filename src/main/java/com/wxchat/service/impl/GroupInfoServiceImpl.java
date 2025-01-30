@@ -200,7 +200,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             groupInfo.setGroupId(StringTools.getGroupId());
             this.groupInfoMapper.insert(groupInfo);
 
-            //将自己添加为联系人
+            //将群组添加到"联系人信息表"
             UserContact userContact = new UserContact();
             userContact.setStatus(UserContactStatusEnum.FRIEND.getStatus());
             userContact.setContactType(UserContactTypeEnum.GROUP.getType());
@@ -210,8 +210,8 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             userContact.setLastUpdateTime(curDate);
             this.userContactMapper.insert(userContact);
 
-            //创建会话
-            String sessionId = StringTools.getChatSessionId4Group(groupInfo.getGroupId());
+            //TODO 创建会话
+            /*String sessionId = StringTools.getChatSessionId4Group(groupInfo.getGroupId());
             ChatSession chatSession = new ChatSession();
             chatSession.setSessionId(sessionId);
             chatSession.setLastMessage(MessageTypeEnum.GROUP_CREATE.getInitMessage());
@@ -232,7 +232,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
 
             //channelContextUtils.addUser2Group(groupInfo.getGroupOwnerId(), groupInfo.getGroupId());
 
-            //创建消息
+            //TODO 创建消息
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setSessionId(sessionId);
             chatMessage.setMessageType(MessageTypeEnum.GROUP_CREATE.getType());
@@ -252,7 +252,8 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             MessageSendDto messageSend = CopyTools.copy(chatMessage, MessageSendDto.class);
             messageSend.setExtendData(chatSessionUser);
             messageSend.setLastMessage(chatSessionUser.getLastMessage());
-            //messageHandler.sendMessage(messageSend);
+            //messageHandler.sendMessage(messageSend);*/
+
         } else {//修改
             GroupInfo dbInfo = this.groupInfoMapper.selectByGroupId(groupInfo.getGroupId());
             if (!dbInfo.getGroupOwnerId().equals(groupInfo.getGroupOwnerId())) {
@@ -260,16 +261,20 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             }
             this.groupInfoMapper.updateByGroupId(groupInfo, groupInfo.getGroupId());
 
-            //更新相关表冗余的字段
-            String contactNameUpdate = null;
+            //TODO 更新相关表冗余的字段
+            //TODO 修改群昵称发送ws消息
+
+            /*String contactNameUpdate = null;
             if (!dbInfo.getGroupName().equals(groupInfo.getGroupName())) {
                 contactNameUpdate = groupInfo.getGroupName();
             }
             //chatSessionUserService.updateRedundanceInfo(contactNameUpdate, groupInfo.getGroupId());
+*/
         }
         if (null == avatarFile) {
             return;
         }
+        //头像上传到目标目录
         String baseFolder = appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE;
         File targetFileFolder = new File(baseFolder + Constants.FILE_FOLDER_AVATAR_NAME);
         if (!targetFileFolder.exists()) {

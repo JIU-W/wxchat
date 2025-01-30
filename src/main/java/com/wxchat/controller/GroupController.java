@@ -68,8 +68,13 @@ public class GroupController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
+    /**
+     * 加载我的群组
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/loadMyGroup")
-    //@GlobalInterceptor
+    @GlobalInterceptor
     public ResponseVO loadMyGroup(HttpServletRequest request) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         GroupInfoQuery infoQuery = new GroupInfoQuery();
@@ -81,7 +86,6 @@ public class GroupController extends ABaseController {
 
     /**
      * 获取群信息
-     *
      * @param request
      * @param groupId
      * @return
