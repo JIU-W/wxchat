@@ -92,9 +92,9 @@ public class GroupController extends ABaseController {
      */
     @RequestMapping(value = "/getGroupInfo")
     //@GlobalInterceptor
-    public ResponseVO getGroupInfo(HttpServletRequest request,
-                                   @NotEmpty String groupId) {
+    public ResponseVO getGroupInfo(HttpServletRequest request, @NotEmpty String groupId) {
         GroupInfo groupInfo = getGroupDetailCommon(request, groupId);
+        //查询群成员数
         UserContactQuery userContactQuery = new UserContactQuery();
         userContactQuery.setContactId(groupId);
         Integer memberCount = this.userContactService.findCountByParam(userContactQuery);

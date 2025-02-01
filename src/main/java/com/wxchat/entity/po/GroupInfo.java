@@ -52,6 +52,7 @@ public class GroupInfo implements Serializable {
      */
     private Integer status;
 
+    //成员数量
     private Integer memberCount;
 
     private String groupOwnerNickName;
