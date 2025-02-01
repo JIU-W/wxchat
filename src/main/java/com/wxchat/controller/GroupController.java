@@ -85,13 +85,13 @@ public class GroupController extends ABaseController {
     }
 
     /**
-     * 获取群信息
+     * 获取群组详情信息
      * @param request
      * @param groupId
      * @return
      */
     @RequestMapping(value = "/getGroupInfo")
-    //@GlobalInterceptor
+    @GlobalInterceptor
     public ResponseVO getGroupInfo(HttpServletRequest request, @NotEmpty String groupId) {
         GroupInfo groupInfo = getGroupDetailCommon(request, groupId);
         //查询群成员数
@@ -115,8 +115,11 @@ public class GroupController extends ABaseController {
         return groupInfo;
     }
 
+    /**
+     * 获取群聊详情信息，用于聊天界面
+     */
     @RequestMapping(value = "/getGroupInfo4Chat")
-    //@GlobalInterceptor
+    @GlobalInterceptor
     public ResponseVO getGroupInfo4Chat(HttpServletRequest request, @NotEmpty String groupId) {
         GroupInfo groupInfo = getGroupDetailCommon(request, groupId);
         UserContactQuery userContactQuery = new UserContactQuery();

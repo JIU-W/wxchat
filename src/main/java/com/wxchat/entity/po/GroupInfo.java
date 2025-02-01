@@ -10,7 +10,7 @@ import java.util.Date;
 
 
 /**
- *
+ * 群组信息表
  */
 public class GroupInfo implements Serializable {
 
