@@ -93,6 +93,7 @@ public class GroupController extends ABaseController {
     @RequestMapping(value = "/getGroupInfo")
     @GlobalInterceptor
     public ResponseVO getGroupInfo(HttpServletRequest request, @NotEmpty String groupId) {
+        //查询群聊详情信息
         GroupInfo groupInfo = getGroupDetailCommon(request, groupId);
         //查询群成员数
         UserContactQuery userContactQuery = new UserContactQuery();
@@ -102,6 +103,9 @@ public class GroupController extends ABaseController {
         return getSuccessResponseVO(groupInfo);
     }
 
+    /**
+     * 获取群聊详情信息
+     */
     private GroupInfo getGroupDetailCommon(HttpServletRequest request, String groupId) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         UserContact userContact = this.userContactService.getUserContactByUserIdAndContactId(tokenUserInfoDto.getUserId(), groupId);
@@ -121,13 +125,17 @@ public class GroupController extends ABaseController {
     @RequestMapping(value = "/getGroupInfo4Chat")
     @GlobalInterceptor
     public ResponseVO getGroupInfo4Chat(HttpServletRequest request, @NotEmpty String groupId) {
+        //查询群聊详情信息
         GroupInfo groupInfo = getGroupDetailCommon(request, groupId);
+
+        //查询"联系人信息表"(该群的成员)及其"群成员用户信息"
         UserContactQuery userContactQuery = new UserContactQuery();
         userContactQuery.setContactId(groupId);
-        userContactQuery.setQueryUserInfo(true);
+        userContactQuery.setQueryUserInfo(true);//需要同时去查询用户信息(群成员的用户信息)
         userContactQuery.setOrderBy("create_time asc");
         userContactQuery.setStatus(UserContactStatusEnum.FRIEND.getStatus());
         List<UserContact> userContactList = this.userContactService.findListByParam(userContactQuery);
+        //封装返回给前端的数据
         GroupInfoVO groupInfoVo = new GroupInfoVO();
         groupInfoVo.setGroupInfo(groupInfo);
         groupInfoVo.setUserContactList(userContactList);

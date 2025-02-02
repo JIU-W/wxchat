@@ -54,6 +54,7 @@ public class UserContactQuery extends BaseParam {
 
     private Boolean excludeMyGroup;
 
+    //是否查询用户信息
     private Boolean queryUserInfo;
 
     private Integer[] statusArray;
