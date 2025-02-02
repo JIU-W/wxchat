@@ -49,8 +49,10 @@ public class UserContact implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastUpdateTime;
 
+    //返回给前端的字段：昵称
     private String contactName;
 
+    //返回给前端的字段：性别
     private Integer sex;
 
     public void setUserId(String userId) {
