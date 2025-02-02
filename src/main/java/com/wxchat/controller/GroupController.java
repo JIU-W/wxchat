@@ -131,11 +131,12 @@ public class GroupController extends ABaseController {
         //查询"联系人信息表"(该群的成员)及其"群成员用户信息"
         UserContactQuery userContactQuery = new UserContactQuery();
         userContactQuery.setContactId(groupId);
-        userContactQuery.setQueryUserInfo(true);//需要同时去查询用户信息(群成员的用户信息)
+        userContactQuery.setQueryUserInfo(true);//需要关联查询群成员的用户信息(昵称和性别)
         userContactQuery.setOrderBy("create_time asc");
         userContactQuery.setStatus(UserContactStatusEnum.FRIEND.getStatus());
         List<UserContact> userContactList = this.userContactService.findListByParam(userContactQuery);
-        //封装返回给前端的数据
+
+        //封装返回给前端的数据(这里是使用了VO封装，当然也可以使用Map集合封装)
         GroupInfoVO groupInfoVo = new GroupInfoVO();
         groupInfoVo.setGroupInfo(groupInfo);
         groupInfoVo.setUserContactList(userContactList);
@@ -145,13 +146,12 @@ public class GroupController extends ABaseController {
 
     /**
      * 退群
-     *
      * @param request
      * @param groupId
      * @return
      */
     @RequestMapping(value = "/leaveGroup")
-    //@GlobalInterceptor
+    @GlobalInterceptor
     public ResponseVO leaveGroup(HttpServletRequest request, @NotEmpty String groupId) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         groupInfoService.leaveGroup(tokenUserInfoDto.getUserId(), groupId, MessageTypeEnum.LEAVE_GROUP);
@@ -160,7 +160,6 @@ public class GroupController extends ABaseController {
 
     /**
      * 解散群
-     *
      * @param request
      * @param groupId
      * @return
@@ -176,7 +175,6 @@ public class GroupController extends ABaseController {
 
     /**
      * 添加或者移除人员
-     *
      * @param request
      * @param groupId
      * @param selectContacts
