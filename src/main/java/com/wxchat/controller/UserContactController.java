@@ -53,6 +53,12 @@ public class UserContactController extends ABaseController {
     @Resource
     private UserContactApplyService userContactApplyService;
 
+    /**
+     * 搜索联系人
+     * @param request
+     * @param contactId
+     * @return
+     */
     @RequestMapping("/search")
     @GlobalInterceptor
     public ResponseVO search(HttpServletRequest request, @NotEmpty String contactId) {
@@ -64,11 +70,20 @@ public class UserContactController extends ABaseController {
         return getSuccessResponseVO(resultDto);
     }
 
+    /**
+     * 申请添加联系人
+     * @param request
+     * @param contactId 联系人id或者群组id
+     * @param contactType
+     * @param applyInfo 申请信息
+     * @return
+     */
     @RequestMapping("/applyAdd")
     @GlobalInterceptor
     public ResponseVO applyAdd(HttpServletRequest request, @NotEmpty String contactId,
                                @NotEmpty String contactType, String applyInfo) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        //申请添加联系人
         Integer joinType = userContactApplyService.applyAdd(tokenUserInfoDto, contactId, contactType, applyInfo);
         return getSuccessResponseVO(joinType);
     }
