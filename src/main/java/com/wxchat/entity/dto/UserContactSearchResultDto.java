@@ -3,13 +3,29 @@ package com.wxchat.entity.dto;
 import com.wxchat.entity.enums.UserContactStatusEnum;
 
 public class UserContactSearchResultDto {
+
+    //用户的好友ID 或者 用户加入的群组ID
     private String contactId;
+
+    //联系人类型：0-好友，1-群组
     private String contactType;
+
+    //联系人名称 或者 群组名称
     private String nickName;
+
+    //头像最后更新时间
     private Long avatarLastUpdate;
+
+    //联系人状态 或者 群组状态
     private Integer status;
+
+    //联系人状态名称 或者 群组状态名称
     private String statusName;
+
+    //联系人性别
     private Integer sex;
+
+    //联系人地区
     private String areaName;
 
     public String getContactId() {

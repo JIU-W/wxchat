@@ -168,11 +168,12 @@ public class UserContactServiceImpl implements UserContactService {
         }
         UserContactSearchResultDto resultDto = new UserContactSearchResultDto();
         switch (typeEnum) {
-            case USER:
+            case USER://搜索的联系人类型为"好友"
                 UserInfo userInfo = userInfoMapper.selectByUserId(contactId);
                 if (userInfo == null) {
                     return null;
                 }
+                //将用户信息拷贝到搜索结果中
                 resultDto = CopyTools.copy(userInfo, UserContactSearchResultDto.class);
                 break;
             case GROUP:
@@ -180,23 +181,28 @@ public class UserContactServiceImpl implements UserContactService {
                 if (null == groupInfo) {
                     return null;
                 }
+                //将群信息(群组名)拷贝到搜索结果中
                 resultDto.setNickName(groupInfo.getGroupName());
                 break;
         }
+        //将联系人类型及其ID拷贝到搜索结果中
         resultDto.setContactType(typeEnum.toString());
         resultDto.setContactId(contactId);
 
+        //判断是否是自己
         if (userId.equals(contactId)) {
+            //如果是自己，则直接返回好友状态
             resultDto.setStatus(UserContactStatusEnum.FRIEND.getStatus());
             return resultDto;
         }
         //查询是否已经是好友
+        //查询联系人状态status并放入resultDto中
         UserContact userContact = this.userContactMapper.selectByUserIdAndContactId(userId, contactId);
         resultDto.setStatus(userContact == null ? null : userContact.getStatus());
         return resultDto;
     }
 
-    @Override
+
     public void addContact(String applyUserId, String receiveUserId, String contactId, Integer contactType, String applyInfo) {
         //群人上限判断
         if (UserContactTypeEnum.GROUP.getType().equals(contactType)) {

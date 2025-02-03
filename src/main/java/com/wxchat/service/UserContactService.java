@@ -73,7 +73,7 @@ public interface UserContactService {
     Integer deleteUserContactByUserIdAndContactId(String userId, String contactId);
 
     /**
-     * 搜索用户的联系人信息(用户的联系人以及用户加入的群组)
+     * 精确搜索用户的联系人信息(用户的好友或者用户加入的群组)
      * @param userId
      * @param contactId
      * @return
