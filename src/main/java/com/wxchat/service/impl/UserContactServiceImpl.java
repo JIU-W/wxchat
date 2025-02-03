@@ -161,7 +161,6 @@ public class UserContactServiceImpl implements UserContactService {
         return this.userContactMapper.deleteByUserIdAndContactId(userId, contactId);
     }
 
-    @Override
     public UserContactSearchResultDto searchContact(String userId, String contactId) {
         UserContactTypeEnum typeEnum = UserContactTypeEnum.getByPrefix(contactId);
         if (typeEnum == null) {
