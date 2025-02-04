@@ -103,7 +103,7 @@ public class UserContactController extends ABaseController {
         UserContactApplyQuery userContactApplyQuery = new UserContactApplyQuery();
         userContactApplyQuery.setOrderBy("last_apply_time desc");
         userContactApplyQuery.setReceiveUserId(tokenUserInfoDto.getUserId());
-        //查询申请联系人信息
+        //设置要去关联查询申请联系人的具体信息
         userContactApplyQuery.setQueryContactInfo(true);
         userContactApplyQuery.setPageNo(pageNo);
         userContactApplyQuery.setPageSize(PageSize.SIZE15.getSize());
