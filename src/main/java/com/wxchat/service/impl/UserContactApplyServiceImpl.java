@@ -213,7 +213,6 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
             }
             //设置"消息接收人"为"群主"
             receiveUserId = groupInfo.getGroupOwnerId();
-            //设置"加入方式"
             joinType = groupInfo.getJoinType();
         } else {//申请添加好友
             UserInfo userInfo = userInfoMapper.selectByUserId(contactId);
@@ -223,34 +222,36 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
             joinType = userInfo.getJoinType();
         }
 
-        //直接加入不用记录申请记录
+        //加入方式为"直接加入"：不用记录申请记录
         if (JoinTypeEnum.JOIN.getType().equals(joinType)) {
-            this.userContactService.addContact(applyUserId, receiveUserId, contactId, typeEnum.getType(), applyInfo);
+            //TODO 添加联系人
+            //this.userContactService.addContact(applyUserId, receiveUserId, contactId, typeEnum.getType(), applyInfo);
             return joinType;
         }
 
-        UserContactApply dbApply = this.userContactApplyMapper.selectByApplyUserIdAndReceiveUserIdAndContactId(applyUserId, receiveUserId, contactId);
-        if (dbApply == null) {
+        UserContactApply dbApply = this.userContactApplyMapper
+                .selectByApplyUserIdAndReceiveUserIdAndContactId(applyUserId, receiveUserId, contactId);
+        if (dbApply == null) {//第一次申请，新增申请记录
             UserContactApply contactApply = new UserContactApply();
             contactApply.setApplyUserId(applyUserId);
             contactApply.setContactType(typeEnum.getType());
             contactApply.setReceiveUserId(receiveUserId);
             contactApply.setLastApplyTime(curDate);
             contactApply.setContactId(contactId);
-            contactApply.setStatus(UserContactApplyStatusEnum.INIT.ordinal());
+            contactApply.setStatus(UserContactApplyStatusEnum.INIT.ordinal());//设置为待处理
             contactApply.setApplyInfo(applyInfo);
             this.userContactApplyMapper.insert(contactApply);
-        } else {
-            //更新状态
+        } else {//不是第一次申请，修改申请记录的部分字段
             UserContactApply contactApply = new UserContactApply();
-            contactApply.setStatus(UserContactApplyStatusEnum.INIT.getStatus());
+            contactApply.setStatus(UserContactApplyStatusEnum.INIT.getStatus());//更新状态
             contactApply.setLastApplyTime(curDate);
             contactApply.setApplyInfo(applyInfo);
             this.userContactApplyMapper.updateByApplyId(contactApply, dbApply.getApplyId());
         }
+        //发送ws消息
         if (dbApply == null || !UserContactApplyStatusEnum.INIT.getStatus().equals(dbApply.getStatus())) {
             //如果是待处理状态就不发消息，避免重复发送
-            //发送ws消息
+            //TODO 发送ws消息
             MessageSendDto messageSend = new MessageSendDto();
             messageSend.setMessageType(MessageTypeEnum.CONTACT_APPLY.getType());
             messageSend.setMessageContent(applyInfo);
