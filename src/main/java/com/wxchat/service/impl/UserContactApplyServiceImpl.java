@@ -309,5 +309,7 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
             userContactMapper.insertOrUpdate(userContact);
             return;
         }
+
     }
+
 }
