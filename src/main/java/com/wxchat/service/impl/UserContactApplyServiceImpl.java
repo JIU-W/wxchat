@@ -201,20 +201,21 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
         UserContact userContact = userContactMapper.selectByUserIdAndContactId(applyUserId, contactId);
         if (userContact != null &&
                 ArraysUtil.contains(new Integer[]{
-                        UserContactStatusEnum.BLACKLIST_BE.getStatus(),
-                        UserContactStatusEnum.BLACKLIST_BE_FIRST.getStatus()
-                }, userContact.getStatus())) {
+                        UserContactStatusEnum.BLACKLIST_BE.getStatus(), UserContactStatusEnum.BLACKLIST_BE_FIRST.getStatus()},
+                        userContact.getStatus())) {
             throw new BusinessException("对方已经你拉黑，无法添加");
         }
 
-        if (UserContactTypeEnum.GROUP == typeEnum) {
+        if (UserContactTypeEnum.GROUP == typeEnum) {//申请加入群组
             GroupInfo groupInfo = groupInfoMapper.selectByGroupId(contactId);
             if (groupInfo == null || GroupStatusEnum.DISSOLUTION.getStatus().equals(groupInfo.getStatus())) {
                 throw new BusinessException("群聊不存在或已解散");
             }
+            //设置"消息接收人"为"群主"
             receiveUserId = groupInfo.getGroupOwnerId();
+            //设置"加入方式"
             joinType = groupInfo.getJoinType();
-        } else {
+        } else {//申请添加好友
             UserInfo userInfo = userInfoMapper.selectByUserId(contactId);
             if (userInfo == null) {
                 throw new BusinessException(ResponseCodeEnum.CODE_600);
