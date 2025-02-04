@@ -261,7 +261,7 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
         return joinType;
     }
 
-    @Override
+
     @Transactional(rollbackFor = Exception.class)
     public void dealWithApply(String userId, Integer applyId, Integer status) {
         UserContactApplyStatusEnum statusEnum = UserContactApplyStatusEnum.getByStatus(status);
@@ -274,25 +274,28 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
 
-        //更新申请信息 只能由待处理更新为其他状态
+        //更新申请信息 只能由"待处理"更新为"其他状态"
         UserContactApply updateInfo = new UserContactApply();
         updateInfo.setStatus(statusEnum.getStatus());
         updateInfo.setLastApplyTime(System.currentTimeMillis());
 
         UserContactApplyQuery applyQuery = new UserContactApplyQuery();
         applyQuery.setApplyId(applyId);
-        applyQuery.setStatus(UserContactApplyStatusEnum.INIT.getStatus());
+        applyQuery.setStatus(UserContactApplyStatusEnum.INIT.getStatus());//设置查询条件，只更新"待处理"的申请记录
+        //更新申请记录的状态信息
         Integer count = userContactApplyMapper.updateByParam(updateInfo, applyQuery);
         if (count == 0) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
 
+        //处理申请为"同意"的情况
         if (UserContactApplyStatusEnum.PASS.getStatus().equals(status)) {
-            //添加联系人
-            userContactService.addContact(applyInfo.getApplyUserId(), applyInfo.getReceiveUserId(), applyInfo.getContactId(), applyInfo.getContactType(), applyInfo.getApplyInfo());
+            //TODO 添加联系人
+            //userContactService.addContact(applyInfo.getApplyUserId(), applyInfo.getReceiveUserId(), applyInfo.getContactId(), applyInfo.getContactType(), applyInfo.getApplyInfo());
             return;
         }
 
+        //处理申请为"拉黑"的情况
         if (UserContactApplyStatusEnum.BLACKLIST == statusEnum) {
             //拉黑 将接收人添加到申请人的联系人中，标记申请人被拉黑
             Date curDate = new Date();

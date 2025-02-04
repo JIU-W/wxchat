@@ -111,7 +111,21 @@ public class UserContactController extends ABaseController {
         return getSuccessResponseVO(resultVO);
     }
 
-
+    /**
+     * 处理申请
+     * @param request
+     * @param applyId
+     * @param status
+     * @return
+     */
+    @RequestMapping("/dealWithApply")
+    @GlobalInterceptor
+    public ResponseVO dealWithApply(HttpServletRequest request, @NotNull Integer applyId, @NotNull Integer status) {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        //处理申请
+        userContactApplyService.dealWithApply(tokenUserInfoDto.getUserId(), applyId, status);
+        return getSuccessResponseVO(null);
+    }
 
 
 }

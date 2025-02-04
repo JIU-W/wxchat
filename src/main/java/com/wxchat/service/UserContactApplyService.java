@@ -93,5 +93,9 @@ public interface UserContactApplyService {
      */
     Integer applyAdd(TokenUserInfoDto tokenUserInfoDto, String contactId, String contactType, String applyInfo);
 
+    /**
+     * 处理申请
+     */
     void dealWithApply(String userId, Integer applyId, Integer status);
+
 }
