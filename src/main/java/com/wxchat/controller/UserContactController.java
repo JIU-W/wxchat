@@ -54,7 +54,7 @@ public class UserContactController extends ABaseController {
     private UserContactApplyService userContactApplyService;
 
     /**
-     * 搜索联系人
+     * 搜索联系人：根据contactId精确搜索"用户"或者"群组"
      * @param request
      * @param contactId
      * @return
@@ -71,10 +71,10 @@ public class UserContactController extends ABaseController {
     }
 
     /**
-     * 申请添加联系人
+     * 申请添加联系人(申请添加好友 或者 申请加入群组)
      * @param request
-     * @param contactId 联系人id或者群组id
-     * @param contactType
+     * @param contactId 用户id或者群组id
+     * @param contactType 联系人类型(好友 USER 或者群组 GROUP)
      * @param applyInfo 申请信息
      * @return
      */
@@ -82,6 +82,7 @@ public class UserContactController extends ABaseController {
     @GlobalInterceptor
     public ResponseVO applyAdd(HttpServletRequest request, @NotEmpty String contactId,
                                @NotEmpty String contactType, String applyInfo) {
+        //获取当前登录用户信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         //申请添加联系人
         Integer joinType = userContactApplyService.applyAdd(tokenUserInfoDto, contactId, contactType, applyInfo);
