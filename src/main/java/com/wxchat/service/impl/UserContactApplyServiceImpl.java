@@ -203,7 +203,7 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
                 ArraysUtil.contains(new Integer[]{
                         UserContactStatusEnum.BLACKLIST_BE.getStatus(), UserContactStatusEnum.BLACKLIST_BE_FIRST.getStatus()},
                         userContact.getStatus())) {
-            throw new BusinessException("对方已经你拉黑，无法添加");
+            throw new BusinessException("对方已经把你拉黑，无法添加");
         }
 
         if (UserContactTypeEnum.GROUP == typeEnum) {//申请加入群组

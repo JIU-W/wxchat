@@ -89,5 +89,29 @@ public class UserContactController extends ABaseController {
         return getSuccessResponseVO(joinType);
     }
 
+    /**
+     * 加载申请列表
+     * @param request
+     * @param pageNo
+     * @return
+     */
+    @RequestMapping("/loadApply")
+    @GlobalInterceptor
+    public ResponseVO loadApply(HttpServletRequest request, Integer pageNo) {
+        //获取当前登录用户信息
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        UserContactApplyQuery userContactApplyQuery = new UserContactApplyQuery();
+        userContactApplyQuery.setOrderBy("last_apply_time desc");
+        userContactApplyQuery.setReceiveUserId(tokenUserInfoDto.getUserId());
+        //查询申请联系人信息
+        userContactApplyQuery.setQueryContactInfo(true);
+        userContactApplyQuery.setPageNo(pageNo);
+        userContactApplyQuery.setPageSize(PageSize.SIZE15.getSize());
+        PaginationResultVO resultVO = userContactApplyService.findListByPage(userContactApplyQuery);
+        return getSuccessResponseVO(resultVO);
+    }
+
+
+
 
 }
