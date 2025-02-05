@@ -224,8 +224,8 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
 
         //加入方式为"直接加入"：不用记录申请记录
         if (JoinTypeEnum.JOIN.getType().equals(joinType)) {
-            //TODO 添加联系人
-            //this.userContactService.addContact(applyUserId, receiveUserId, contactId, typeEnum.getType(), applyInfo);
+            //添加联系人
+            this.userContactService.addContact(applyUserId, receiveUserId, contactId, typeEnum.getType(), applyInfo);
             return joinType;
         }
 
@@ -290,8 +290,8 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
 
         //处理申请为"同意"的情况
         if (UserContactApplyStatusEnum.PASS.getStatus().equals(status)) {
-            //TODO 添加联系人
-            //userContactService.addContact(applyInfo.getApplyUserId(), applyInfo.getReceiveUserId(), applyInfo.getContactId(), applyInfo.getContactType(), applyInfo.getApplyInfo());
+            //添加联系人
+            userContactService.addContact(applyInfo.getApplyUserId(), applyInfo.getReceiveUserId(), applyInfo.getContactId(), applyInfo.getContactType(), applyInfo.getApplyInfo());
             return;
         }
 

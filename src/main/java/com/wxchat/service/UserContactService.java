@@ -82,7 +82,6 @@ public interface UserContactService {
 
     /**
      * 添加联系人
-     *
      * @param applyUserId
      * @param receiveUserId
      * @param contactId

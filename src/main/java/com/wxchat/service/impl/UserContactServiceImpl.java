@@ -202,7 +202,9 @@ public class UserContactServiceImpl implements UserContactService {
         return resultDto;
     }
 
-
+    /**
+     * 添加联系人
+     */
     public void addContact(String applyUserId, String receiveUserId, String contactId, Integer contactType, String applyInfo) {
         //群人上限判断
         if (UserContactTypeEnum.GROUP.getType().equals(contactType)) {
