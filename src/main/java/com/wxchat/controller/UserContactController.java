@@ -64,7 +64,8 @@ public class UserContactController extends ABaseController {
     public ResponseVO search(HttpServletRequest request, @NotEmpty String contactId) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         //精确搜索联系人信息(好友或者群组)
-        //这里搜索出来的联系人不一定就是好友，也有可能是非好友，也有可能被好友删除等等，要根据status去具体判断。
+        //这里搜索出来的联系人不一定就是好友，也有可能是非好友，也有可能被好友删除，也有可能被拉黑了等等，
+        //要根据status去具体判断。
         UserContactSearchResultDto resultDto =
                 userContactService.searchContact(tokenUserInfoDto.getUserId(), contactId);
         return getSuccessResponseVO(resultDto);
