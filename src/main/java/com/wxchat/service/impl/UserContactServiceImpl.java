@@ -206,7 +206,7 @@ public class UserContactServiceImpl implements UserContactService {
      * 添加联系人
      */
     public void addContact(String applyUserId, String receiveUserId, String contactId, Integer contactType, String applyInfo) {
-        //群组的人数上限判断
+        //联系人类型为"群组"类型时的前置判断：群组的人数上限判断
         if (UserContactTypeEnum.GROUP.getType().equals(contactType)) {
             UserContactQuery contactQuery = new UserContactQuery();
             contactQuery.setContactId(contactId);
@@ -217,10 +217,11 @@ public class UserContactServiceImpl implements UserContactService {
                 throw new BusinessException("成员已满，无法加入");
             }
         }
+
         Date curDate = new Date();
-        //同意 双方添加为好友
+        //同意，双方添加为好友
         List<UserContact> contactList = new ArrayList<>();
-        //申请人添加对方
+        //申请人添加接收人：(注：不管是"好友"类型还是"群组"类型，申请人这边都要添加记录)
         UserContact userContact = new UserContact();
         userContact.setUserId(applyUserId);
         userContact.setContactId(contactId);
@@ -229,7 +230,7 @@ public class UserContactServiceImpl implements UserContactService {
         userContact.setLastUpdateTime(curDate);
         userContact.setStatus(UserContactStatusEnum.FRIEND.getStatus());
         contactList.add(userContact);
-        //如果是申请好友 接收人添加申请人  群组不用添加对方为好友
+        //如果联系人类型是"好友"类型，接收人添加申请人 (注："群组"类型的话，接收人不用添加对方为好友，也就不用添加记录)
         if (UserContactTypeEnum.USER.getType().equals(contactType)) {
             userContact = new UserContact();
             userContact.setUserId(receiveUserId);
@@ -243,7 +244,7 @@ public class UserContactServiceImpl implements UserContactService {
         //批量加入
         userContactMapper.insertOrUpdateBatch(contactList);
 
-        //如果是好友申请,接收人也添加申请人为联系人
+        //TODO 如果是好友申请,接收人也添加申请人为联系人
         if (UserContactTypeEnum.USER.getType().equals(contactType)) {
             redisComponet.addUserContact(receiveUserId, applyUserId);
         }
@@ -251,7 +252,7 @@ public class UserContactServiceImpl implements UserContactService {
         redisComponet.addUserContact(applyUserId, contactId);
 
 
-        //创建会话信息
+        //TODO 创建会话信息
         String sessionId = null;
         if (UserContactTypeEnum.USER.getType().equals(contactType)) {
             sessionId = StringTools.getChatSessionId4User(new String[]{applyUserId, contactId});
@@ -457,4 +458,5 @@ public class UserContactServiceImpl implements UserContactService {
         chatMessage.setStatus(MessageStatusEnum.SENDED.getStatus());
         //chatMessageMapper.insert(chatMessage);
     }
+
 }
