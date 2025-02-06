@@ -206,7 +206,7 @@ public class UserContactServiceImpl implements UserContactService {
      * 添加联系人
      */
     public void addContact(String applyUserId, String receiveUserId, String contactId, Integer contactType, String applyInfo) {
-        //群人上限判断
+        //群组的人数上限判断
         if (UserContactTypeEnum.GROUP.getType().equals(contactType)) {
             UserContactQuery contactQuery = new UserContactQuery();
             contactQuery.setContactId(contactId);
