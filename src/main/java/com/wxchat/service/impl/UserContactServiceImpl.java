@@ -230,7 +230,7 @@ public class UserContactServiceImpl implements UserContactService {
         userContact.setLastUpdateTime(curDate);
         userContact.setStatus(UserContactStatusEnum.FRIEND.getStatus());
         contactList.add(userContact);
-        //如果联系人类型是"好友"类型，接收人添加申请人 (注："群组"类型的话，接收人不用添加对方为好友，也就不用添加记录)
+        //如果联系人类型是"好友"类型，接收人添加申请人 (注："群组"类型的话，接收人即群主不用再次加入本群，也就不用添加记录)
         if (UserContactTypeEnum.USER.getType().equals(contactType)) {
             userContact = new UserContact();
             userContact.setUserId(receiveUserId);
@@ -244,16 +244,16 @@ public class UserContactServiceImpl implements UserContactService {
         //批量加入
         userContactMapper.insertOrUpdateBatch(contactList);
 
-        //TODO 如果是好友申请,接收人也添加申请人为联系人
-        if (UserContactTypeEnum.USER.getType().equals(contactType)) {
+        //TODO 如果是好友申请,接收人也添加申请人为联系人  添加缓存
+        /*if (UserContactTypeEnum.USER.getType().equals(contactType)) {
             redisComponet.addUserContact(receiveUserId, applyUserId);
         }
         //审核通过，将申请人的联系人添加上 我 或 群组
-        redisComponet.addUserContact(applyUserId, contactId);
+        redisComponet.addUserContact(applyUserId, contactId);*/
 
 
         //TODO 创建会话信息
-        String sessionId = null;
+        /*String sessionId = null;
         if (UserContactTypeEnum.USER.getType().equals(contactType)) {
             sessionId = StringTools.getChatSessionId4User(new String[]{applyUserId, contactId});
         } else {
@@ -309,14 +309,14 @@ public class UserContactServiceImpl implements UserContactService {
             //chatMessageMapper.insert(chatMessage);
 
             MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
-            /**
+            *//**
              * 发送给接受好友申请的人
-             */
+             *//*
             //messageHandler.sendMessage(messageSendDto);
 
-            /**
+            *//**
              * 发送给申请人 发送人就是接收人，联系人就是申请人
-             */
+             *//*
             messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND_SELF.getType());
             messageSendDto.setContactId(applyUserId);
             messageSendDto.setExtendData(contactUser);
@@ -373,7 +373,8 @@ public class UserContactServiceImpl implements UserContactService {
             messageSend.setMemberCount(memberCount);
             messageSend.setContactName(groupInfo.getGroupName());
             //messageHandler.sendMessage(messageSend);
-        }
+        }*/
+
     }
 
     @Override

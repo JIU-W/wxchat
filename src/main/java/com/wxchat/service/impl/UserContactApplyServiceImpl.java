@@ -190,8 +190,7 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
         //申请人
         String applyUserId = tokenUserInfoDto.getUserId();
         //设置默认申请信息，如果前端传的申请信息为空则使用默认的信息。
-        applyInfo = StringTools.isEmpty(applyInfo) ?
-                String.format(Constants.APPLY_INFO_TEMPLATE, tokenUserInfoDto.getNickName()) : applyInfo;
+        applyInfo = StringTools.isEmpty(applyInfo) ? String.format(Constants.APPLY_INFO_TEMPLATE, tokenUserInfoDto.getNickName()) : applyInfo;
 
         Long curDate = System.currentTimeMillis();
         Integer joinType = null;

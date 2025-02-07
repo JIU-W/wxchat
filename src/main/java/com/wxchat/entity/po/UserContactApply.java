@@ -54,6 +54,7 @@ public class UserContactApply implements Serializable {
     //返回给前端的扩展字段
     private String contactName;
 
+    //返回给前端的：用于前端查找后的状态展示
     private String statusName;
 
     public String getStatusName() {
