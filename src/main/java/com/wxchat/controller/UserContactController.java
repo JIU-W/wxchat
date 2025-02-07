@@ -128,5 +128,62 @@ public class UserContactController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
+    /**
+     * 加载 我加入的群聊列表、我的好友列表
+     * @param request
+     * @param contactType
+     * @return
+     */
+    @RequestMapping("/loadContact")
+    @GlobalInterceptor
+    public ResponseVO loadContact(HttpServletRequest request, @NotEmpty String contactType) {
+        UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByName(contactType);
+        if (null == contactTypeEnum) {
+            throw new BusinessException(ResponseCodeEnum.CODE_600);
+        }
+        //获取当前登录用户信息
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        UserContactQuery contactQuery = new UserContactQuery();
+        contactQuery.setUserId(tokenUserInfoDto.getUserId());
+        contactQuery.setContactType(contactTypeEnum.getType());
+        if (UserContactTypeEnum.USER == contactTypeEnum) {
+            //设置
+            contactQuery.setQueryContactUserInfo(true);
+        } else if (UserContactTypeEnum.GROUP == contactTypeEnum) {
+            //
+            contactQuery.setQueryGroupInfo(true);
+            contactQuery.setExcludeMyGroup(true);
+        }
+        contactQuery.setStatusArray(new Integer[]{
+                UserContactStatusEnum.FRIEND.getStatus(),
+                UserContactStatusEnum.DEL_BE.getStatus(),
+                UserContactStatusEnum.BLACKLIST_BE.getStatus()});
+        contactQuery.setOrderBy("last_update_time desc");
+        //查询出我的联系人列表
+        List<UserContact> contactList = userContactService.findListByParam(contactQuery);
+        return getSuccessResponseVO(contactList);
+    }
+
+    /**
+     *
+     * @param request
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/getContactInfo")
+    @GlobalInterceptor
+    public ResponseVO getContactInfo(HttpServletRequest request, @NotEmpty String contactId) {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        UserInfo userInfo = userInfoService.getUserInfoByUserId(contactId);
+        UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
+        userInfoVO.setContactStatus(UserContactStatusEnum.NOT_FRIEND.getStatus());
+        //判断是否是联系人
+        UserContact userContact = userContactService.getUserContactByUserIdAndContactId(tokenUserInfoDto.getUserId(), contactId);
+        if (userContact != null) {
+            userInfoVO.setContactStatus(userContact.getStatus());
+        }
+        return getSuccessResponseVO(userInfoVO);
+    }
+
 
 }
