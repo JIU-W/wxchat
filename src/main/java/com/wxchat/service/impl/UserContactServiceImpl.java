@@ -203,7 +203,7 @@ public class UserContactServiceImpl implements UserContactService {
     }
 
     /**
-     * 添加联系人
+     * 添加联系人：添加好友或者群组
      */
     public void addContact(String applyUserId, String receiveUserId, String contactId, Integer contactType, String applyInfo) {
         //联系人类型为"群组"类型时的前置判断：群组的人数上限判断
@@ -218,9 +218,12 @@ public class UserContactServiceImpl implements UserContactService {
             }
         }
 
-        Date curDate = new Date();
         //同意，双方添加为好友
         List<UserContact> contactList = new ArrayList<>();
+        Date curDate = new Date();
+        //因为加好友是互相添加的，所以要添加两条记录。
+        //而进群组是只是申请人进，消息接收人(群组)本身就在群组里，所以只要添加一条记录。
+
         //申请人添加接收人：(注：不管是"好友"类型还是"群组"类型，申请人这边都要添加记录)
         UserContact userContact = new UserContact();
         userContact.setUserId(applyUserId);
@@ -230,7 +233,7 @@ public class UserContactServiceImpl implements UserContactService {
         userContact.setLastUpdateTime(curDate);
         userContact.setStatus(UserContactStatusEnum.FRIEND.getStatus());
         contactList.add(userContact);
-        //如果联系人类型是"好友"类型，接收人添加申请人 (注："群组"类型的话，接收人即群主不用再次加入本群，也就不用添加记录)
+        //接收人添加申请人(前提：联系人类型是"好友"类型)(注："群组"类型的话，接收人即群主不用再次加入本群，也就不用添加记录)
         if (UserContactTypeEnum.USER.getType().equals(contactType)) {
             userContact = new UserContact();
             userContact.setUserId(receiveUserId);
