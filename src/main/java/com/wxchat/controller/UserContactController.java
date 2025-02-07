@@ -129,7 +129,7 @@ public class UserContactController extends ABaseController {
     }
 
     /**
-     * 加载 我加入的群聊列表、我的好友列表
+     * 加载我加入的群聊列表、我的好友列表
      * @param request
      * @param contactType
      * @return
