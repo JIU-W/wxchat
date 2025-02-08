@@ -62,19 +62,23 @@ public class UserInfoController extends ABaseController {
         userInfo.setLastLoginTime(null);
         //更新用户信息
         this.userInfoService.updateUserInfo(userInfo, avatarFile, avatarCover);
-        if (!tokenUserInfoDto.getNickName().equals(userInfo.getNickName())) {
+        /*if (!tokenUserInfoDto.getNickName().equals(userInfo.getNickName())) {
             tokenUserInfoDto.setNickName(userInfo.getNickName());
-            //
             resetTokenUserInfo(request, tokenUserInfoDto);
-        }
+        }*/
         return getUserInfo(request);
     }
 
-
-/*
+    /**
+     * 修改密码
+     * @param request
+     * @param password
+     * @return
+     */
     @RequestMapping("/updatePassword")
     @GlobalInterceptor
-    public ResponseVO updatePassword(HttpServletRequest request, @NotEmpty @Pattern(regexp = Constants.REGEX_PASSWORD) String password) {
+    public ResponseVO updatePassword(HttpServletRequest request,
+                                     @NotEmpty @Pattern(regexp = Constants.REGEX_PASSWORD) String password) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         UserInfo userInfo = new UserInfo();
         userInfo.setPassword(StringTools.encodeByMD5(password));
@@ -83,6 +87,8 @@ public class UserInfoController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
+
+/*
     @RequestMapping("/logout")
     @GlobalInterceptor
     public ResponseVO logout(HttpServletRequest request) {
