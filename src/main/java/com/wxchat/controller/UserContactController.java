@@ -155,6 +155,9 @@ public class UserContactController extends ABaseController {
             //设置查询条件，排除"我"创建的群组
             contactQuery.setExcludeMyGroup(true);
         }
+        //设置查询条件，排除"被"删除或者"被"拉黑的联系人
+        //注：这里的"首次被对方拉黑"状态的情况不能被查出来，因为"首次被对方拉黑"是在你初次申请的时候别人还没有同意申请就把你拉黑了，
+        //你还没有进入对方的好友列表，所以不能被查出来。
         contactQuery.setStatusArray(new Integer[]{
                 UserContactStatusEnum.FRIEND.getStatus(),
                 UserContactStatusEnum.DEL_BE.getStatus(),

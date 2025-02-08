@@ -70,7 +70,7 @@
             <if test="query.lastUpdateTimeEnd!= null and query.lastUpdateTimeEnd!=''">
                 <![CDATA[ and  last_update_time< date_sub(str_to_date(#{query.lastUpdateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
             </if>
-            <if test="query.statusArray!=null and query.statusArray.length>0">
+            <if test="query.statusArray != null and query.statusArray.length > 0">
                 and c.status in(<foreach collection="query.StatusArray" separator="," item="item">#{item}</foreach>)
             </if>
         </where>
