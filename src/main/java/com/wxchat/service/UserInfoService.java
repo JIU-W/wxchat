@@ -105,7 +105,14 @@ public interface UserInfoService {
      */
     void updateUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException;
 
+    /**
+     * 修改用户状态
+     */
     void updateUserStatus(Integer status, String userId);
 
+    /**
+     * 强制下线
+     */
     void forceOffLine(String userId);
+
 }

@@ -19,6 +19,11 @@ public class AdminUserInfoController extends ABaseController {
     @Resource
     private UserInfoService userInfoService;
 
+    /**
+     * 加载用户列表
+     * @param userInfoQuery
+     * @return
+     */
     @RequestMapping("/loadUser")
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO loadUser(UserInfoQuery userInfoQuery) {
@@ -27,7 +32,12 @@ public class AdminUserInfoController extends ABaseController {
         return getSuccessResponseVO(resultVO);
     }
 
-
+    /**
+     * 更新用户状态
+     * @param status
+     * @param userId
+     * @return
+     */
     @RequestMapping("/updateUserStatus")
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO updateUserStatus(@NotNull Integer status,
@@ -36,6 +46,11 @@ public class AdminUserInfoController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
+    /**
+     * 强制下线
+     * @param userId
+     * @return
+     */
     @RequestMapping("/forceOffLine")
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO forceOffLine(@NotEmpty String userId) {

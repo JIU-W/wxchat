@@ -334,7 +334,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         //chatSessionUserService.updateRedundanceInfo(contactNameUpdate, userInfo.getUserId());
     }
 
-    @Override
+
     public void updateUserStatus(Integer status, String userId) {
         UserStatusEnum userStatusEnum = UserStatusEnum.getByStatus(status);
         if (userStatusEnum == null) {
@@ -345,7 +345,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfoMapper.updateByUserId(updateInfo, userId);
     }
 
-    @Override
+
     public void forceOffLine(String userId) {
         MessageSendDto sendDto = new MessageSendDto();
         sendDto.setContactType(UserContactTypeEnum.USER.getType());
