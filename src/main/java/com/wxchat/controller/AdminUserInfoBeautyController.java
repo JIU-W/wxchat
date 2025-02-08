@@ -33,13 +33,14 @@ public class AdminUserInfoBeautyController extends ABaseController {
     }
 
     /**
-     * 保存靓号
+     * 新增、修改靓号
      * @param beauty
      * @return
      */
     @RequestMapping("/saveBeautAccount")
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO saveBeautAccount(UserInfoBeauty beauty) {
+        //保存靓号
         userInfoBeautyService.saveAccount(beauty);
         return getSuccessResponseVO(null);
     }

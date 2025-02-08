@@ -185,30 +185,33 @@ public class UserInfoBeautyServiceImpl implements UserInfoBeautyService {
 
 
     public void saveAccount(UserInfoBeauty beauty) {
-        if (beauty.getId() != null) {
+        if (beauty.getId() != null) {//修改的情况
             UserInfoBeauty dbInfo = this.userInfoBeautyMapper.selectById(beauty.getId());
             if (BeautyAccountStatusEnum.USEED.getStatus().equals(dbInfo.getStatus())) {
                 //已经使用的不允许修改
                 throw new BusinessException(ResponseCodeEnum.CODE_600);
             }
         }
-        //判断邮箱是否已经存在
+
+        //新增的时候：判断邮箱是否已经存在
         UserInfoBeauty dbInfo = this.userInfoBeautyMapper.selectByEmail(beauty.getEmail());
         if (beauty.getId() == null && dbInfo != null) {
             throw new BusinessException("靓号邮箱已经存在");
         }
-
-        if (beauty.getId() != null && dbInfo != null && dbInfo.getId() != null && !beauty.getId().equals(dbInfo.getId())) {
+        //修改的时候：判断邮箱是否已经存在
+        if (beauty.getId() != null && dbInfo != null
+                && dbInfo.getId() != null && !beauty.getId().equals(dbInfo.getId())) {
             throw new BusinessException("靓号邮箱已经存在");
         }
 
-        //判断靓号是否存在
+        //新增的时候：判断靓号是否存在
         dbInfo = this.userInfoBeautyMapper.selectByUserId(beauty.getUserId());
         if (beauty.getId() == null && dbInfo != null) {
             throw new BusinessException("靓号已经存在");
         }
-
-        if (beauty.getId() != null && dbInfo != null && dbInfo.getId() != null && !beauty.getId().equals(dbInfo.getId())) {
+        //修改的时候：判断靓号是否存在
+        if (beauty.getId() != null && dbInfo != null
+                && dbInfo.getId() != null && !beauty.getId().equals(dbInfo.getId())) {
             throw new BusinessException("靓号已经存在");
         }
 
@@ -217,17 +220,20 @@ public class UserInfoBeautyServiceImpl implements UserInfoBeautyService {
         if (userInfo != null) {
             throw new BusinessException("靓号邮箱已经被注册");
         }
-
+        //判断靓号是否已经注册
         userInfo = this.userInfoMapper.selectByUserId(beauty.getUserId());
         if (userInfo != null) {
             throw new BusinessException("靓号已经被注册");
         }
 
         if (beauty.getId() != null) {
+            //修改
             this.userInfoBeautyMapper.updateById(beauty, beauty.getId());
         } else {
+            //新增
             this.userInfoBeautyMapper.insert(beauty);
         }
+
     }
 
 
