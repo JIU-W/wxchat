@@ -380,7 +380,7 @@ public class UserContactServiceImpl implements UserContactService {
 
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     public void removeUserContact(String userId, String contactId, UserContactStatusEnum statusEnum) {
         //移除好友
         UserContact userContact = new UserContact();
