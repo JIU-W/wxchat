@@ -72,7 +72,7 @@ public interface AppUpdateService {
     Integer deleteAppUpdateById(Integer id);
 
     /**
-     * 保存"APP版本更新"(新增或者修改)
+     * 保存"APP版本更新"信息(新增或者修改)
      */
     void saveUpdate(AppUpdate appUpdate, MultipartFile file) throws IOException;
 
