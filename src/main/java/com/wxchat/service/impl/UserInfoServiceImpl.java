@@ -300,7 +300,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         return tokenUserInfoDto;
     }
 
-    @Override
+
     @Transactional(rollbackFor = Exception.class)
     public void updateUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException {
         if (avatarFile != null) {
@@ -314,7 +314,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             avatarCover.transferTo(new File(filePath + Constants.COVER_IMAGE_SUFFIX));
         }
         UserInfo dbInfo = this.userInfoMapper.selectByUserId(userInfo.getUserId());
-
+        //更新用户信息
         this.userInfoMapper.updateByUserId(userInfo, userInfo.getUserId());
 
         //更新相关表冗余的字段
@@ -325,10 +325,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (contactNameUpdate == null) {
             return;
         }
+        //TODO
         //更新token中的昵称
-        TokenUserInfoDto tokenUserInfoDto = redisComponet.getTokenUserInfoDtoByUserId(userInfo.getUserId());
-        tokenUserInfoDto.setNickName(contactNameUpdate);
-        redisComponet.saveTokenUserInfoDto(tokenUserInfoDto);
+        //TokenUserInfoDto tokenUserInfoDto = redisComponet.getTokenUserInfoDtoByUserId(userInfo.getUserId());
+        //tokenUserInfoDto.setNickName(contactNameUpdate);
+        //redisComponet.saveTokenUserInfoDto(tokenUserInfoDto);
 
         //chatSessionUserService.updateRedundanceInfo(contactNameUpdate, userInfo.getUserId());
     }

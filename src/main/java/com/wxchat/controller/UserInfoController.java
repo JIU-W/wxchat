@@ -47,24 +47,31 @@ public class UserInfoController extends ABaseController {
         return getSuccessResponseVO(userInfoVO);
     }
 
-/*
+    /**
+     * 保存用户信息
+     */
     @RequestMapping("/saveUserInfo")
     @GlobalInterceptor
-    public ResponseVO saveUserInfo(HttpServletRequest request, UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException {
+    public ResponseVO saveUserInfo(HttpServletRequest request, UserInfo userInfo,
+                                   MultipartFile avatarFile, MultipartFile avatarCover) throws IOException {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         userInfo.setUserId(tokenUserInfoDto.getUserId());
         userInfo.setPassword(null);
         userInfo.setStatus(null);
         userInfo.setCreateTime(null);
         userInfo.setLastLoginTime(null);
+        //更新用户信息
         this.userInfoService.updateUserInfo(userInfo, avatarFile, avatarCover);
         if (!tokenUserInfoDto.getNickName().equals(userInfo.getNickName())) {
             tokenUserInfoDto.setNickName(userInfo.getNickName());
+            //
             resetTokenUserInfo(request, tokenUserInfoDto);
         }
         return getUserInfo(request);
     }
 
+
+/*
     @RequestMapping("/updatePassword")
     @GlobalInterceptor
     public ResponseVO updatePassword(HttpServletRequest request, @NotEmpty @Pattern(regexp = Constants.REGEX_PASSWORD) String password) {

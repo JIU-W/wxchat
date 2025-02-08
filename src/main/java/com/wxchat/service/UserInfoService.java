@@ -100,6 +100,9 @@ public interface UserInfoService {
      */
     UserInfoVO login(String email, String password);
 
+    /**
+     * 修改用户信息
+     */
     void updateUserInfo(UserInfo userInfo, MultipartFile avatarFile, MultipartFile avatarCover) throws IOException;
 
     void updateUserStatus(Integer status, String userId);
