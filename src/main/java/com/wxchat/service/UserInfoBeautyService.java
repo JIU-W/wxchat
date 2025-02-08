@@ -105,5 +105,10 @@ public interface UserInfoBeautyService {
      */
     Integer deleteUserInfoBeautyByEmail(String email);
 
+    /**
+     * 保存
+     * @param beauty
+     */
     void saveAccount(UserInfoBeauty beauty);
+
 }

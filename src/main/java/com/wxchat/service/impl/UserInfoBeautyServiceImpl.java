@@ -183,7 +183,7 @@ public class UserInfoBeautyServiceImpl implements UserInfoBeautyService {
         return this.userInfoBeautyMapper.deleteByEmail(email);
     }
 
-    @Override
+
     public void saveAccount(UserInfoBeauty beauty) {
         if (beauty.getId() != null) {
             UserInfoBeauty dbInfo = this.userInfoBeautyMapper.selectById(beauty.getId());
@@ -229,4 +229,6 @@ public class UserInfoBeautyServiceImpl implements UserInfoBeautyService {
             this.userInfoBeautyMapper.insert(beauty);
         }
     }
+
+
 }
