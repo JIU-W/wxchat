@@ -83,19 +83,23 @@ public class UserInfoController extends ABaseController {
         UserInfo userInfo = new UserInfo();
         userInfo.setPassword(StringTools.encodeByMD5(password));
         this.userInfoService.updateUserInfoByUserId(userInfo, tokenUserInfoDto.getUserId());
+        //TODO 强制退出，重新登录
         //channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
         return getSuccessResponseVO(null);
     }
 
-
-/*
+    /**
+     * 退出登录
+     * @param request
+     * @return
+     */
     @RequestMapping("/logout")
     @GlobalInterceptor
     public ResponseVO logout(HttpServletRequest request) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
-        //关闭ws
+        //关闭ws连接
         //channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
         return getSuccessResponseVO(null);
-    }*/
+    }
 
 }
