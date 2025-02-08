@@ -48,10 +48,13 @@ public class UserContactQuery extends BaseParam {
 
     private String lastUpdateTimeEnd;
 
+    //是否需要关联查询联系人的用户信息(昵称和性别)
     private Boolean queryContactUserInfo;
 
+    //是否需要关联查询群组信息(群组名称)
     private Boolean queryGroupInfo;
 
+    //是否排除我创建的群组
     private Boolean excludeMyGroup;
 
     //是否需要关联查询群成员的用户信息(昵称和性别)

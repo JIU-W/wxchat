@@ -129,7 +129,7 @@ public class UserContactController extends ABaseController {
     }
 
     /**
-     * 加载我加入的群聊列表、我的好友列表
+     * 1.加载我加入的群组列表(不包括我创建的群组)、2.加载我的好友列表
      * @param request
      * @param contactType
      * @return
@@ -146,12 +146,13 @@ public class UserContactController extends ABaseController {
         UserContactQuery contactQuery = new UserContactQuery();
         contactQuery.setUserId(tokenUserInfoDto.getUserId());
         contactQuery.setContactType(contactTypeEnum.getType());
-        if (UserContactTypeEnum.USER == contactTypeEnum) {
-            //设置
+        if (UserContactTypeEnum.USER == contactTypeEnum) {//查询"好友"的额外查询条件
+            //设置需要关联查询用户的信息(昵称、性别)
             contactQuery.setQueryContactUserInfo(true);
-        } else if (UserContactTypeEnum.GROUP == contactTypeEnum) {
-            //
+        } else if (UserContactTypeEnum.GROUP == contactTypeEnum) {//查询"群组"的额外查询条件
+            //设置需要关联查询群组的信息(群组名称)
             contactQuery.setQueryGroupInfo(true);
+            //设置查询条件，排除"我"创建的群组
             contactQuery.setExcludeMyGroup(true);
         }
         contactQuery.setStatusArray(new Integer[]{
@@ -170,7 +171,7 @@ public class UserContactController extends ABaseController {
      * @param contactId
      * @return
      */
-    @RequestMapping("/getContactInfo")
+    /*@RequestMapping("/getContactInfo")
     @GlobalInterceptor
     public ResponseVO getContactInfo(HttpServletRequest request, @NotEmpty String contactId) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
@@ -184,6 +185,6 @@ public class UserContactController extends ABaseController {
         }
         return getSuccessResponseVO(userInfoVO);
     }
-
+*/
 
 }

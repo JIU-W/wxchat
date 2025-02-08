@@ -87,15 +87,15 @@
         </if>
         FROM user_contact c
         <if test="query.queryContactUserInfo">
-            inner join user_info u on c.contact_id=u.user_id
+            inner join user_info u on c.contact_id = u.user_id
         </if>
         <if test="query.queryUserInfo">
-            inner join user_info u on c.user_id=u.user_id
+            inner join user_info u on c.user_id = u.user_id
         </if>
         <if test="query.queryGroupInfo">
-            inner join group_info g on c.contact_id=g.group_id
+            inner join group_info g on c.contact_id = g.group_id
             <if test="query.excludeMyGroup">
-                and g.group_owner_id!=c.user_id
+                and g.group_owner_id != c.user_id
             </if>
         </if>
         <include refid="query_condition"/>

@@ -49,7 +49,7 @@ public class UserContact implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastUpdateTime;
 
-    //返回给前端的字段：昵称
+    //返回给前端的字段：用户昵称或者群组名称
     private String contactName;
 
     //返回给前端的字段：性别
