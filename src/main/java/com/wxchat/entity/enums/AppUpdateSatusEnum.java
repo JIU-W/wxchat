@@ -1,7 +1,9 @@
 package com.wxchat.entity.enums;
 
 public enum AppUpdateSatusEnum {
-    INIT(0, "未发布"), GRAYSCALE(1, "灰度发布"), ALL(2, "全网发布");
+    INIT(0, "未发布"),
+    GRAYSCALE(1, "灰度发布"),
+    ALL(2, "全网发布");
 
     private Integer status;
     private String description;

@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
 /**
- * app发布 Controller
+ * app发布
  */
 @RestController("adminAppUpdateController")
 @RequestMapping("/admin")
@@ -27,7 +27,7 @@ public class AdminAppUpdateController extends ABaseController {
     private AppUpdateService appUpdateService;
 
     /**
-     * 根据条件分页查询
+     * 根据条件分页查询"APP版本更新"
      */
     @RequestMapping("/loadUpdateList")
     @GlobalInterceptor(checkAdmin = true)
@@ -36,20 +36,21 @@ public class AdminAppUpdateController extends ABaseController {
         return getSuccessResponseVO(appUpdateService.findListByPage(query));
     }
 
+    /**
+     * 保存"APP版本更新"(新增或者修改)
+     */
     @RequestMapping("/saveUpdate")
     @GlobalInterceptor(checkAdmin = true)
-    public ResponseVO saveUpdate(Integer id,
-                                 @NotEmpty String version,
-                                 @NotEmpty String updateDesc,
-                                 @NotNull Integer fileType,
-                                 String outerLink,
-                                 MultipartFile file) throws IOException {
+    public ResponseVO saveUpdate(Integer id, @NotEmpty String version,
+                                 @NotEmpty String updateDesc, @NotNull Integer fileType,
+                                 String outerLink, MultipartFile file) throws IOException {
         AppUpdate appUpdate = new AppUpdate();
         appUpdate.setId(id);
         appUpdate.setVersion(version);
         appUpdate.setUpdateDesc(updateDesc);
         appUpdate.setFileType(fileType);
         appUpdate.setOuterLink(outerLink);
+        //保存"APP版本更新"(新增或者修改)
         appUpdateService.saveUpdate(appUpdate, file);
         return getSuccessResponseVO(null);
     }

@@ -145,48 +145,59 @@ public class AppUpdateServiceImpl implements AppUpdateService {
         return this.appUpdateMapper.deleteById(id);
     }
 
-    @Override
+
     @Transactional(rollbackFor = Exception.class)
     public void saveUpdate(AppUpdate appUpdate, MultipartFile file) throws IOException {
         AppUpdateFileTypeEnum fileTypeEnum = AppUpdateFileTypeEnum.getByType(appUpdate.getFileType());
         if (null == fileTypeEnum) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
-
+        //
         if (appUpdate.getId() != null) {
             AppUpdate dbInfo = this.getAppUpdateById(appUpdate.getId());
             if (!AppUpdateSatusEnum.INIT.getStatus().equals(dbInfo.getStatus())) {
                 throw new BusinessException(ResponseCodeEnum.CODE_600);
             }
         }
+
         AppUpdateQuery updateQuery = new AppUpdateQuery();
         updateQuery.setOrderBy("id desc");
         updateQuery.setSimplePage(new SimplePage(0, 1));
+        //查询最新版本
         List<AppUpdate> appUpdateList = appUpdateMapper.selectList(updateQuery);
         if (!appUpdateList.isEmpty()) {
+            //最新版本
             AppUpdate lastest = appUpdateList.get(0);
+            //最新版本号
             Long dbVersion = Long.parseLong(lastest.getVersion().replace(".", ""));
+            //当前版本号
             Long currentVersion = Long.parseLong(appUpdate.getVersion().replace(".", ""));
-            if (appUpdate.getId() == null && currentVersion <= dbVersion) {
+            if (appUpdate.getId() == null && currentVersion <= dbVersion) {//新增的情况
                 throw new BusinessException("当前版本必须大于历史版本");
             }
-            if (appUpdate.getId() != null && currentVersion >= dbVersion && !appUpdate.getId().equals(lastest.getId())) {
+            if (appUpdate.getId() != null && currentVersion >= dbVersion
+                    && !appUpdate.getId().equals(lastest.getId())) {//修改的情况
                 throw new BusinessException("当前版本必须大于历史版本");
             }
 
+            //版本号不能重复
             AppUpdate versionDb = appUpdateMapper.selectByVersion(appUpdate.getVersion());
             if (appUpdate.getId() != null && versionDb != null && !versionDb.getId().equals(appUpdate.getId())) {
                 throw new BusinessException("版本号已存在");
             }
+
         }
 
         if (appUpdate.getId() == null) {
             appUpdate.setCreateTime(new Date());
             appUpdate.setStatus(AppUpdateSatusEnum.INIT.getStatus());
+            //新增"APP版本更新"
             appUpdateMapper.insert(appUpdate);
         } else {
+            //修改"APP版本更新"
             appUpdateMapper.updateById(appUpdate, appUpdate.getId());
         }
+        //文件上传
         if (file != null) {
             File folder = new File(appConfig.getProjectFolder() + Constants.APP_UPDATE_FOLDER);
             if (!folder.exists()) {
@@ -194,6 +205,7 @@ public class AppUpdateServiceImpl implements AppUpdateService {
             }
             file.transferTo(new File(folder.getAbsolutePath() + "/" + appUpdate.getId() + Constants.APP_EXE_SUFFIX));
         }
+
     }
 
     @Override

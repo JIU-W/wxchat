@@ -1,7 +1,9 @@
 package com.wxchat.entity.enums;
 
 public enum AppUpdateFileTypeEnum {
-    LOCAL(0, "本地"), OUTER_LINK(1, "外链");
+
+    LOCAL(0, "本地"),
+    OUTER_LINK(1, "外链");
 
     private Integer type;
     private String description;

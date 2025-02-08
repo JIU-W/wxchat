@@ -71,6 +71,9 @@ public interface AppUpdateService {
      */
     Integer deleteAppUpdateById(Integer id);
 
+    /**
+     * 保存"APP版本更新"(新增或者修改)
+     */
     void saveUpdate(AppUpdate appUpdate, MultipartFile file) throws IOException;
 
     void postUpdate(Integer id, Integer status, String grayscaleUid);
