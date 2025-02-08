@@ -169,25 +169,51 @@ public class UserContactController extends ABaseController {
     }
 
     /**
-     *
+     * 获取联系人信息 1.从自己的 好友列表、群组列表 查看 2.从群组的成员列表查看
+     * 因为有第二种情况，所以查出来的结果可能不是好友，也可能是好友。
      * @param request
      * @param contactId
      * @return
      */
-    /*@RequestMapping("/getContactInfo")
+    @RequestMapping("/getContactInfo")
     @GlobalInterceptor
     public ResponseVO getContactInfo(HttpServletRequest request, @NotEmpty String contactId) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         UserInfo userInfo = userInfoService.getUserInfoByUserId(contactId);
+        //封装userInfoVO
         UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
+        //设置默认值：不是好友
         userInfoVO.setContactStatus(UserContactStatusEnum.NOT_FRIEND.getStatus());
-        //判断是否是联系人
+        //判断是否是好友
         UserContact userContact = userContactService.getUserContactByUserIdAndContactId(tokenUserInfoDto.getUserId(), contactId);
-        if (userContact != null) {
+        if (userContact != null) {//是好友
             userInfoVO.setContactStatus(userContact.getStatus());
         }
         return getSuccessResponseVO(userInfoVO);
     }
-*/
+
+    /**
+     * 获取
+     * @param request
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/getContactUserInfo")
+    @GlobalInterceptor
+    public ResponseVO getContactUserInfo(HttpServletRequest request, @NotEmpty String contactId) {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        UserContact userContact = this.userContactService.getUserContactByUserIdAndContactId(tokenUserInfoDto.getUserId(), contactId);
+        if (null == userContact || !ArraysUtil.contains(new Integer[]{
+                UserContactStatusEnum.FRIEND.getStatus(),
+                UserContactStatusEnum.DEL_BE.getStatus(),
+                UserContactStatusEnum.BLACKLIST_BE.getStatus(),
+                UserContactStatusEnum.BLACKLIST_BE_FIRST.getStatus()}, userContact.getStatus())) {
+            throw new BusinessException(ResponseCodeEnum.CODE_600);
+        }
+        UserInfo userInfo = userInfoService.getUserInfoByUserId(contactId);
+        UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
+        return getSuccessResponseVO(userInfoVO);
+    }
+
 
 }
