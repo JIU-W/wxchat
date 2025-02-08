@@ -21,6 +21,11 @@ public class AdminGroupController extends ABaseController {
     @Resource
     private GroupInfoService groupInfoService;
 
+    /**
+     * 加载群组列表
+     * @param groupInfoQuery
+     * @return
+     */
     @RequestMapping("/loadGroup")
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO loadGroup(GroupInfoQuery groupInfoQuery) {
@@ -32,13 +37,20 @@ public class AdminGroupController extends ABaseController {
         return getSuccessResponseVO(resultVO);
     }
 
+    /**
+     * 解散群组
+     * @param groupId
+     * @return
+     */
     @RequestMapping("/dissolutionGroup")
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO dissolutionGroup(@NotEmpty String groupId) {
+        //查询群组信息
         GroupInfo groupInfo = groupInfoService.getGroupInfoByGroupId(groupId);
         if (null == groupInfo) {
-            throw new BusinessException(ResponseCodeEnum.CODE_200);
+            throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
+        //解散群组
         groupInfoService.dissolutionGroup(groupInfo.getGroupOwnerId(), groupId);
         return getSuccessResponseVO(null);
     }

@@ -77,6 +77,9 @@ public interface GroupInfoService {
      */
     void saveGroup(GroupInfo groupInfo, MultipartFile avatarFile, MultipartFile avatarCover);
 
+    /**
+     * 解散群聊
+     */
     void dissolutionGroup(String userId, String groupId);
 
     void leaveGroup(String userId, String groupId, MessageTypeEnum messageTypeEnum);
