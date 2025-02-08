@@ -169,8 +169,12 @@ public class UserContactController extends ABaseController {
     }
 
     /**
-     * 获取联系人信息 1.从自己的 好友列表、群组列表 查看 2.从群组的成员列表查看
-     * 因为有第二种情况，所以查出来的结果可能不是好友，也可能是好友。
+     * 获取联系人信息  (点击列表的 群聊头像 或者 好友头像 触发)
+     *
+     * 1.获取好友信息：(1.从自己的好友列表查看  2.在群聊的群成员列表查看
+     *                  因为有第二种情况，所以查出来的结果可能不是好友，也可能是好友)
+     * 2.TODO 获取群组信息：逻辑未完成
+     *
      * @param request
      * @param contactId
      * @return
@@ -193,7 +197,7 @@ public class UserContactController extends ABaseController {
     }
 
     /**
-     * 获取
+     * 获取我的好友详情信息(从自己的好友列表查看)
      * @param request
      * @param contactId
      * @return
@@ -207,9 +211,11 @@ public class UserContactController extends ABaseController {
                 UserContactStatusEnum.FRIEND.getStatus(),
                 UserContactStatusEnum.DEL_BE.getStatus(),
                 UserContactStatusEnum.BLACKLIST_BE.getStatus(),
-                UserContactStatusEnum.BLACKLIST_BE_FIRST.getStatus()}, userContact.getStatus())) {
+                //UserContactStatusEnum.BLACKLIST_BE_FIRST.getStatus()
+                }, userContact.getStatus())) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
+        //获取好友信息
         UserInfo userInfo = userInfoService.getUserInfoByUserId(contactId);
         UserInfoVO userInfoVO = CopyTools.copy(userInfo, UserInfoVO.class);
         return getSuccessResponseVO(userInfoVO);
