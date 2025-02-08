@@ -222,4 +222,34 @@ public class UserContactController extends ABaseController {
     }
 
 
+    /**
+     * 删除联系人(其实就是删除好友)
+     * @param request
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/delContact")
+    @GlobalInterceptor
+    public ResponseVO delContact(HttpServletRequest request, @NotEmpty String contactId) {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        //删除好友
+        userContactService.removeUserContact(tokenUserInfoDto.getUserId(), contactId, UserContactStatusEnum.DEL);
+        return getSuccessResponseVO(null);
+    }
+
+    /**
+     * 拉黑好友
+     * @param request
+     * @param contactId
+     * @return
+     */
+    @RequestMapping("/addContact2BlackList")
+    @GlobalInterceptor
+    public ResponseVO addContact2BlackList(HttpServletRequest request, @NotEmpty String contactId) {
+        TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        //拉黑好友
+        userContactService.removeUserContact(tokenUserInfoDto.getUserId(), contactId, UserContactStatusEnum.BLACKLIST);
+        return getSuccessResponseVO(null);
+    }
+
 }

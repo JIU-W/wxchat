@@ -380,7 +380,7 @@ public class UserContactServiceImpl implements UserContactService {
 
     }
 
-    @Override
+
     public void removeUserContact(String userId, String contactId, UserContactStatusEnum statusEnum) {
         //移除好友
         UserContact userContact = new UserContact();
@@ -395,10 +395,12 @@ public class UserContactServiceImpl implements UserContactService {
             friendContact.setStatus(UserContactStatusEnum.BLACKLIST_BE.getStatus());
         }
         userContactMapper.updateByUserIdAndContactId(friendContact, contactId, userId);
+
+        //TODO 缓存相关
         //将我从对方的好友缓存中删除
-        redisComponet.removeUserContact(contactId, userId);
+        //redisComponet.removeUserContact(contactId, userId);
         //将对方从我的列表中删除
-        redisComponet.removeUserContact(userId, contactId);
+        //redisComponet.removeUserContact(userId, contactId);
     }
 
     @Override
