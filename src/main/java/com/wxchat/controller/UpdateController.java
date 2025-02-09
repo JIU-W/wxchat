@@ -3,6 +3,7 @@ package com.wxchat.controller;
 import com.wxchat.annotation.GlobalInterceptor;
 import com.wxchat.entity.config.AppConfig;
 import com.wxchat.entity.constants.Constants;
+import com.wxchat.entity.dto.TokenUserInfoDto;
 import com.wxchat.entity.po.AppUpdate;
 import com.wxchat.entity.vo.AppUpdateVO;
 import com.wxchat.entity.vo.ResponseVO;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.io.File;
@@ -38,17 +40,24 @@ public class UpdateController extends ABaseController {
     private AppUpdateService appUpdateService;
 
     /**
-     * 检查版本
+     * 版本检测更新
      * @param appVersion 用户的版本号
      * @param uid 用户的uid
      * @return
      */
     @RequestMapping("/checkVersion")
     @GlobalInterceptor
-    public ResponseVO loadAllCategory(String appVersion, String uid) {
+    public ResponseVO loadAllCategory(HttpServletRequest request, String appVersion, String uid) {
         if (StringTools.isEmpty(appVersion)) {
             return getSuccessResponseVO(null);
         }
+        //TODO 修复bug
+        //bug内容：在用户刚打开客户端时，会刷新调用这个接口，但是这个时候前端不会传递uid过来，所以这里需要做一下填补。
+        if("".equals(uid)){
+            TokenUserInfoDto tokenUserInfo = getTokenUserInfo(request);
+            uid = tokenUserInfo.getUserId();
+        }
+
         //查询相对于用户现在的版本来说是否有新版本，并查询出最新版本
         AppUpdate appUpdate = appUpdateService.getLatestUpdate(appVersion, uid);
         if (appUpdate == null) {
@@ -66,7 +75,7 @@ public class UpdateController extends ABaseController {
         return getSuccessResponseVO(updateVO);
     }
 
-    @RequestMapping("/download")
+    /*@RequestMapping("/download")
     @GlobalInterceptor
     public void download(HttpServletResponse response, @NotNull Integer id) {
         OutputStream out = null;
@@ -106,6 +115,6 @@ public class UpdateController extends ABaseController {
                 }
             }
         }
-    }
+    }*/
 
 }

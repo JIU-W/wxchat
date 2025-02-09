@@ -84,7 +84,7 @@ public class Constants {
 
     public static final String APP_UPDATE_FOLDER = "/app/";
 
-    public static final String APP_NAME = "EasyChatSetup.";
+    public static final String APP_NAME = "WXChatSetup.";
     public static final String APP_EXE_SUFFIX = ".exe";
 
     //正则
