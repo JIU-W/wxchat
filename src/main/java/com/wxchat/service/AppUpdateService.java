@@ -81,5 +81,9 @@ public interface AppUpdateService {
      */
     void postUpdate(Integer id, Integer status, String grayscaleUid);
 
+    /**
+     * 获取最新版本信息
+     */
     AppUpdate getLatestUpdate(String appVersion, String uid);
+
 }

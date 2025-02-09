@@ -234,7 +234,7 @@ public class AppUpdateServiceImpl implements AppUpdateService {
         appUpdateMapper.updateById(update, id);
     }
 
-    @Override
+
     public AppUpdate getLatestUpdate(String appVersion, String uid) {
         return appUpdateMapper.selectLatestUpdate(appVersion, uid);
     }

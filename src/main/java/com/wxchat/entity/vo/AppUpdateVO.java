@@ -22,12 +22,16 @@ public class AppUpdateVO implements Serializable {
      */
     private List<String> updateList;
 
+    //文件大小
     private Long size;
 
+    //文件名
     private String fileName;
 
+    //文件类型
     private Integer fileType;
 
+    //外链
     private String outerLink;
 
     public Integer getFileType() {
