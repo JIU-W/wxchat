@@ -33,8 +33,8 @@ public class NettyWebSocketStarter implements Runnable {
     @Resource
     private AppConfig appConfig;
 
-    //@Resource
-    //private HandlerWebSocket handlerWebSocket;
+    @Resource
+    private HandlerWebSocket handlerWebSocket;
 
     /**
      * boss线程组，用于处理连接
@@ -68,20 +68,31 @@ public class NettyWebSocketStarter implements Runnable {
                         protected void initChannel(Channel channel) {
                             ChannelPipeline pipeline = channel.pipeline();
                             //设置几个重要的处理器
-                            // 对http协议的支持，使用http的编码器，解码器
+
+                            //1.对http协议的支持，使用http的编码器，解码器
                             pipeline.addLast(new HttpServerCodec());
+
                             //聚合解码 httpRequest/htppContent/lastHttpContent到fullHttpRequest
-                            //保证接收的http请求的完整性
+                            //2.保证接收的http请求的完整性
                             pipeline.addLast(new HttpObjectAggregator(64 * 1024));
-                            //心跳 long readerIdleTime, long writerIdleTime, long allIdleTime, TimeUnit unit
-                            // readerIdleTime  读超时事件 即测试段一定事件内未接收到被测试段消息
-                            // writerIdleTime  为写超时时间 即测试端一定时间内想被测试端发送消息
-                            //allIdleTime  所有类型的超时时间
-                            pipeline.addLast(new IdleStateHandler(60, 0, 0, TimeUnit.SECONDS));
-                            //pipeline.addLast(new HandlerHeartBeat());
-                            //将http协议升级为ws协议，对websocket支持
-                            pipeline.addLast(new WebSocketServerProtocolHandler("/ws", null, true, 64 * 1024, true, true, 10000L));
-                            //pipeline.addLast(handlerWebSocket);
+
+                            //3.心跳规则
+                            // 参数：long readerIdleTime, long writerIdleTime, long allIdleTime, TimeUnit unit
+                            // readerIdleTime  读超时时间 即"测试端"一定时间内未接收到"被测试端"消息
+                            // writerIdleTime  写超时时间 即"测试端"一定时间内向"被测试端"发送消息
+                            // allIdleTime  所有类型的超时时间
+                            pipeline.addLast(new IdleStateHandler(60, 0,
+                                    0, TimeUnit.SECONDS));
+                            //4.心跳超时处理器
+                            pipeline.addLast(new HandlerHeartBeat());
+
+                            //5.将http协议升级为ws协议，对websocket支持
+                            pipeline.addLast(new WebSocketServerProtocolHandler("/ws",
+                                    null, true, 64 * 1024,
+                                    true, true,
+                                    10000L));
+                            //6.自定义处理器
+                            pipeline.addLast(handlerWebSocket);
                         }
                     });
             //启动
