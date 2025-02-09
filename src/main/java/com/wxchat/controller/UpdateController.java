@@ -51,7 +51,7 @@ public class UpdateController extends ABaseController {
         if (StringTools.isEmpty(appVersion)) {
             return getSuccessResponseVO(null);
         }
-        //TODO 修复bug
+        //TODO 修复已bug
         //bug内容：在用户刚打开客户端时，会刷新调用这个接口，但是这个时候前端不会传递uid过来，所以这里需要做一下填补。
         if("".equals(uid)){
             TokenUserInfoDto tokenUserInfo = getTokenUserInfo(request);
