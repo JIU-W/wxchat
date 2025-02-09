@@ -136,7 +136,7 @@ public class AppUpdateServiceImpl implements AppUpdateService {
     /**
      * 根据Id删除
      */
-    @Override
+
     public Integer deleteAppUpdateById(Integer id) {
         AppUpdate dbInfo = this.getAppUpdateById(id);
         if (!AppUpdateSatusEnum.INIT.getStatus().equals(dbInfo.getStatus())) {
@@ -161,7 +161,7 @@ public class AppUpdateServiceImpl implements AppUpdateService {
         }
 
         AppUpdateQuery updateQuery = new AppUpdateQuery();
-        updateQuery.setOrderBy("id desc");//id降序排列
+        updateQuery.setOrderBy("id desc");//根据id降序排列
         updateQuery.setSimplePage(new SimplePage(0, 1));//只查一条数据
         //查询最新版本
         List<AppUpdate> appUpdateList = appUpdateMapper.selectList(updateQuery);
@@ -171,16 +171,18 @@ public class AppUpdateServiceImpl implements AppUpdateService {
             //最新版本号
             Long dbVersion = Long.parseLong(lastest.getVersion().replace(".", ""));
 
-            //前端传过来的版本号
+            //currentVersion：前端传过来的版本号
             Long currentVersion = Long.parseLong(appUpdate.getVersion().replace(".", ""));
 
             //当前版本：数据库里最大版本号的版本
             //历史版本：版本号小于数据库里最大版本号的版本
-            if (appUpdate.getId() == null && currentVersion <= dbVersion) {//新增的情况
+            //新增的情况
+            if (appUpdate.getId() == null && currentVersion <= dbVersion) {
                 throw new BusinessException("当前版本必须大于历史版本");
             }
+            //修改的情况
             if (appUpdate.getId() != null && currentVersion >= dbVersion
-                    && !appUpdate.getId().equals(lastest.getId())) {//修改的情况
+                    && !appUpdate.getId().equals(lastest.getId())) {
                 throw new BusinessException("修改版本号时，历史版本必须小于当前版本");
             }
 
@@ -212,16 +214,18 @@ public class AppUpdateServiceImpl implements AppUpdateService {
 
     }
 
-    @Override
+
     public void postUpdate(Integer id, Integer status, String grayscaleUid) {
         AppUpdateSatusEnum satusEnum = AppUpdateSatusEnum.getByStatus(status);
         if (status == null) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
         if (AppUpdateSatusEnum.GRAYSCALE == satusEnum && StringTools.isEmpty(grayscaleUid)) {
+            //灰度发布时，必须指定灰度用户
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
         if (AppUpdateSatusEnum.GRAYSCALE != satusEnum) {
+            //不是灰度发布时，灰度用户必须置空
             grayscaleUid = "";
         }
         AppUpdate update = new AppUpdate();
@@ -234,4 +238,5 @@ public class AppUpdateServiceImpl implements AppUpdateService {
     public AppUpdate getLatestUpdate(String appVersion, String uid) {
         return appUpdateMapper.selectLatestUpdate(appVersion, uid);
     }
+
 }

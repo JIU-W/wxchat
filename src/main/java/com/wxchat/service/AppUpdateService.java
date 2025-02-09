@@ -76,6 +76,9 @@ public interface AppUpdateService {
      */
     void saveUpdate(AppUpdate appUpdate, MultipartFile file) throws IOException;
 
+    /**
+     * 发布"app版本"
+     */
     void postUpdate(Integer id, Integer status, String grayscaleUid);
 
     AppUpdate getLatestUpdate(String appVersion, String uid);

@@ -57,7 +57,7 @@ public class AdminAppUpdateController extends ABaseController {
 
     /**
      * 删除"APP版本更新"
-     *//*
+     */
     @RequestMapping("/delUpdate")
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO delUpdate(@NotNull Integer id) {
@@ -65,18 +65,20 @@ public class AdminAppUpdateController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
-    *//**
+    /**
      * 发布"APP版本更新"
      * @param id
      * @param status
      * @param grayscaleUid
      * @return
-     *//*
+     */
     @RequestMapping("/postUpdate")
     @GlobalInterceptor(checkAdmin = true)
-    public ResponseVO postUpdate(@NotNull Integer id, @NotNull Integer status, String grayscaleUid) {
+    public ResponseVO postUpdate(@NotNull Integer id, @NotNull Integer status,
+                                 String grayscaleUid) {
+        //发布"app版本"
         appUpdateService.postUpdate(id, status, grayscaleUid);
         return getSuccessResponseVO(null);
-    }*/
+    }
 
 }
