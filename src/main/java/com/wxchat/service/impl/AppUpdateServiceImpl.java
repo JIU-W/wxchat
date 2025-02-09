@@ -152,8 +152,8 @@ public class AppUpdateServiceImpl implements AppUpdateService {
         if (null == fileTypeEnum) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
-        //
-        if (appUpdate.getId() != null) {
+        //发布了的版本就不能再进行信息修改了
+        if (appUpdate.getId() != null) {//修改的情况
             AppUpdate dbInfo = this.getAppUpdateById(appUpdate.getId());
             if (!AppUpdateSatusEnum.INIT.getStatus().equals(dbInfo.getStatus())) {
                 throw new BusinessException(ResponseCodeEnum.CODE_600);
@@ -161,8 +161,8 @@ public class AppUpdateServiceImpl implements AppUpdateService {
         }
 
         AppUpdateQuery updateQuery = new AppUpdateQuery();
-        updateQuery.setOrderBy("id desc");
-        updateQuery.setSimplePage(new SimplePage(0, 1));
+        updateQuery.setOrderBy("id desc");//id降序排列
+        updateQuery.setSimplePage(new SimplePage(0, 1));//只查一条数据
         //查询最新版本
         List<AppUpdate> appUpdateList = appUpdateMapper.selectList(updateQuery);
         if (!appUpdateList.isEmpty()) {
@@ -170,14 +170,18 @@ public class AppUpdateServiceImpl implements AppUpdateService {
             AppUpdate lastest = appUpdateList.get(0);
             //最新版本号
             Long dbVersion = Long.parseLong(lastest.getVersion().replace(".", ""));
-            //当前版本号
+
+            //前端传过来的版本号
             Long currentVersion = Long.parseLong(appUpdate.getVersion().replace(".", ""));
+
+            //当前版本：数据库里最大版本号的版本
+            //历史版本：版本号小于数据库里最大版本号的版本
             if (appUpdate.getId() == null && currentVersion <= dbVersion) {//新增的情况
                 throw new BusinessException("当前版本必须大于历史版本");
             }
             if (appUpdate.getId() != null && currentVersion >= dbVersion
                     && !appUpdate.getId().equals(lastest.getId())) {//修改的情况
-                throw new BusinessException("当前版本必须大于历史版本");
+                throw new BusinessException("修改版本号时，历史版本必须小于当前版本");
             }
 
             //版本号不能重复

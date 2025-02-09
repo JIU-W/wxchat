@@ -14,7 +14,7 @@ import javax.servlet.MultipartConfigElement;
 
 @EnableAsync
 @SpringBootApplication(scanBasePackages = {"com.wxchat"})
-//@MapperScan(basePackages = {"com.wxchat.mappers"})
+@MapperScan(basePackages = {"com.wxchat.mappers"})
 @EnableTransactionManagement
 @EnableScheduling
 public class WxChatApplication {
