@@ -27,7 +27,7 @@ import javax.annotation.Resource;
 /**
  * 设置通道共享
  */
-@ChannelHandler.Sharable
+@ChannelHandler.Sharable  //标记该handler可被多个channel安全共享，就是一个标记，没啥其他用处，但是Netty会检测
 @Component("handlerWebSocket")
 public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
@@ -93,6 +93,9 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
                 ctx.channel().close();//关闭连接
                 return;
             }
+
+            //走到这里就说明连接没有被断开
+
             /**
              * 用户加入
              */
@@ -108,11 +111,11 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
         }
         String[] queryParams = url.split("\\?");
         if (queryParams.length < 2) {
-            return url;//return null;
+            return null;
         }
         String[] params = queryParams[1].split("=");
         if (params.length != 2) {
-            return url;//return null;
+            return null;
         }
         return params[1];
     }
