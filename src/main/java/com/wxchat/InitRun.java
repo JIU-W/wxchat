@@ -1,5 +1,6 @@
 package com.wxchat;
 
+import com.wxchat.websocket.netty.NettyWebSocketStarter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -18,14 +19,17 @@ public class InitRun implements ApplicationRunner {
     @Resource
     private DataSource dataSource;
 
-    //@Resource
-    //private NettyWebSocketStarter nettyWebSocketStarter;
+    @Resource
+    private NettyWebSocketStarter nettyWebSocketStarter;
 
     @Override
     public void run(ApplicationArguments args) {
         try {
             dataSource.getConnection();
-            //new Thread(nettyWebSocketStarter).start();
+
+            //异步启动netty服务，另启一个线程，不和主线程一起。
+            new Thread(nettyWebSocketStarter).start();
+
             logger.error("服务启动成功，可以开始愉快的开发了");
         } catch (SQLException e) {
             logger.error("数据库配置错误，请检查数据库配置");

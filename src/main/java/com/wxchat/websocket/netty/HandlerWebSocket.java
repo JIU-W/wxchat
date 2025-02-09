@@ -60,10 +60,8 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
     /**
      * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。
-     *
      * @param ctx
      * @param textWebSocketFrame
-     * @throws Exception
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame textWebSocketFrame) throws Exception {
@@ -79,16 +77,20 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            WebSocketServerProtocolHandler.HandshakeComplete complete = (WebSocketServerProtocolHandler.HandshakeComplete) evt;
+            WebSocketServerProtocolHandler.HandshakeComplete complete =
+                    (WebSocketServerProtocolHandler.HandshakeComplete) evt;
+            //获取url
             String url = complete.requestUri();
+            //从url中解析出token
             String token = getToken(url);
             if (token == null) {
-                ctx.channel().close();
+                ctx.channel().close();//关闭连接
                 return;
             }
+            //从redis中获取token对应的用户信息
             TokenUserInfoDto tokenUserInfoDto = redisComponet.getTokenUserInfoDto(token);
             if (null == tokenUserInfoDto) {
-                ctx.channel().close();
+                ctx.channel().close();//关闭连接
                 return;
             }
             /**
@@ -99,17 +101,18 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
         }
     }
 
+    //获取token
     private String getToken(String url) {
         if (StringTools.isEmpty(url) || url.indexOf("?") == -1) {
             return null;
         }
         String[] queryParams = url.split("\\?");
         if (queryParams.length < 2) {
-            return url;
+            return url;//return null;
         }
         String[] params = queryParams[1].split("=");
         if (params.length != 2) {
-            return url;
+            return url;//return null;
         }
         return params[1];
     }
