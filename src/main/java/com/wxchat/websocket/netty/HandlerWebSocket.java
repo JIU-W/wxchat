@@ -96,6 +96,7 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
             //走到这里就说明连接没有被断开
 
+
             /**
              * 用户加入
              */
