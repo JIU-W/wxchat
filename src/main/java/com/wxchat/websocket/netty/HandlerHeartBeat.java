@@ -23,7 +23,9 @@ public class HandlerHeartBeat extends ChannelDuplexHandler {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE) {//心跳超时
+                //获取用户id
                 Attribute<String> attribute = ctx.channel().attr(AttributeKey.valueOf(ctx.channel().id().toString()));
+                //获取通道属性的值：userId
                 String userId = attribute.get();
                 logger.info("用户{}没有发送心跳断开连接", userId);
                 ctx.close();

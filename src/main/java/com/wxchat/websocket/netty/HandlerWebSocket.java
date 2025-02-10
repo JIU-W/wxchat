@@ -60,21 +60,20 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     }
 
     /**
-     * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。
+     * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。  (用于接收心跳)
      * @param ctx
      * @param textWebSocketFrame
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame textWebSocketFrame) throws Exception {
-        //接收心跳
-
         //获取通道
         Channel channel = ctx.channel();
         //获取通道属性
         Attribute<String> attribute = channel.attr(AttributeKey.valueOf(channel.id().toString()));
         //获取通道属性的值：userId
         String userId = attribute.get();
-        //保存用户心跳
+        logger.info("用户{}发送了消息：{}", userId, textWebSocketFrame.text());
+        //保存用户心跳到redis中
         redisComponet.saveUserHeartBeat(userId);
     }
 
@@ -99,15 +98,12 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
                 ctx.channel().close();//关闭连接
                 return;
             }
-
             //走到这里就说明连接没有被断开
-
 
             /**
              * 用户加入
              */
             channelContextUtils.addContext(tokenUserInfoDto.getUserId(), ctx.channel());
-
         }
     }
 

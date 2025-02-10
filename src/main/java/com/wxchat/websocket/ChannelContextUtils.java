@@ -41,8 +41,10 @@ public class ChannelContextUtils {
     @Resource
     private RedisComponet redisComponet;
 
+    //用户通道
     public static final ConcurrentMap<String, Channel> USER_CONTEXT_MAP = new ConcurrentHashMap();
 
+    //群组通道
     public static final ConcurrentMap<String, ChannelGroup> GROUP_CONTEXT_MAP = new ConcurrentHashMap();
 
     //@Resource
@@ -78,12 +80,16 @@ public class ChannelContextUtils {
             }
             channel.attr(attributeKey).set(userId);
 
+            //添加到群组通道
             List<String> contactList = redisComponet.getUserContactList(userId);
+            //遍历群组，添加到群组通道
             for (String groupId : contactList) {
                 if (groupId.startsWith(UserContactTypeEnum.GROUP.getPrefix())) {
                     add2Group(groupId, channel);
                 }
             }
+
+            //添加到用户通道
             USER_CONTEXT_MAP.put(userId, channel);
             redisComponet.saveUserHeartBeat(userId);
 
@@ -214,7 +220,6 @@ public class ChannelContextUtils {
         if (messageSendDto.getContactId() == null) {
             return;
         }
-
         ChannelGroup group = GROUP_CONTEXT_MAP.get(messageSendDto.getContactId());
         if (group == null) {
             return;
@@ -262,8 +267,10 @@ public class ChannelContextUtils {
         sendChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.convertObj2Json(messageSendDto)));
     }
 
+    //添加到群聊
     private void add2Group(String groupId, Channel context) {
         ChannelGroup group = GROUP_CONTEXT_MAP.get(groupId);
+        //如果群聊不存在，则创建一个
         if (group == null) {
             group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
             GROUP_CONTEXT_MAP.put(groupId, group);
@@ -271,6 +278,7 @@ public class ChannelContextUtils {
         if (context == null) {
             return;
         }
+        //添加到群聊
         group.add(context);
     }
 
