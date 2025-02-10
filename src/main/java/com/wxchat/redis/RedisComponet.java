@@ -63,7 +63,8 @@ public class RedisComponet {
 
     //保存最后心跳时间
     public void saveUserHeartBeat(String userId) {
-        redisUtils.setex(Constants.REDIS_KEY_WS_USER_HEART_BEAT + userId, System.currentTimeMillis(), Constants.REDIS_KEY_EXPIRES_HEART_BEAT);
+        redisUtils.setex(Constants.REDIS_KEY_WS_USER_HEART_BEAT + userId, System.currentTimeMillis(),
+                Constants.REDIS_KEY_EXPIRES_HEART_BEAT);
     }
 
     //删除用户心跳

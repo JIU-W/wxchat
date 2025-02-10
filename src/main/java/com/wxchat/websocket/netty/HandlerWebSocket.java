@@ -3,6 +3,7 @@ package com.wxchat.websocket.netty;
 import com.wxchat.entity.dto.TokenUserInfoDto;
 import com.wxchat.redis.RedisComponet;
 import com.wxchat.utils.StringTools;
+import com.wxchat.websocket.ChannelContextUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,8 +34,8 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
     private static final Logger logger = LoggerFactory.getLogger(HandlerWebSocket.class);
 
-    //@Resource
-    //private ChannelContextUtils channelContextUtils;
+    @Resource
+    private ChannelContextUtils channelContextUtils;
 
     @Resource
     private RedisComponet redisComponet;
@@ -66,9 +67,14 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame textWebSocketFrame) throws Exception {
         //接收心跳
+
+        //获取通道
         Channel channel = ctx.channel();
+        //获取通道属性
         Attribute<String> attribute = channel.attr(AttributeKey.valueOf(channel.id().toString()));
+        //获取通道属性的值：userId
         String userId = attribute.get();
+        //保存用户心跳
         redisComponet.saveUserHeartBeat(userId);
     }
 
@@ -100,7 +106,7 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
             /**
              * 用户加入
              */
-            //channelContextUtils.addContext(tokenUserInfoDto.getUserId(), ctx.channel());
+            channelContextUtils.addContext(tokenUserInfoDto.getUserId(), ctx.channel());
 
         }
     }
