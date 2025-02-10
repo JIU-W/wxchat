@@ -103,7 +103,8 @@ public class RedisComponet {
 
     //批量添加用户联系人
     public void addUserContactBatch(String userId, List<String> contactIdList) {
-        redisUtils.lpushAll(Constants.REDIS_KEY_USER_CONTACT + userId, contactIdList, Constants.REDIS_KEY_TOKEN_EXPIRES);
+        redisUtils.lpushAll(Constants.REDIS_KEY_USER_CONTACT + userId, contactIdList,
+                Constants.REDIS_KEY_TOKEN_EXPIRES);
     }
 
     //获取用户session列表

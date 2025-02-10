@@ -13,9 +13,12 @@ import com.wxchat.entity.query.*;
 import com.wxchat.entity.vo.PaginationResultVO;
 import com.wxchat.entity.vo.UserInfoVO;
 import com.wxchat.exception.BusinessException;
+import com.wxchat.mappers.GroupInfoMapper;
+import com.wxchat.mappers.UserContactMapper;
 import com.wxchat.mappers.UserInfoBeautyMapper;
 import com.wxchat.mappers.UserInfoMapper;
 import com.wxchat.redis.RedisComponet;
+import com.wxchat.service.UserContactService;
 import com.wxchat.service.UserInfoService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
@@ -44,11 +47,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Resource
     private AppConfig appConfig;
 
-    //@Resource
-    //private GroupInfoMapper<GroupInfo, GroupInfoQuery> groupInfoMapper;
+    @Resource
+    private GroupInfoMapper<GroupInfo, GroupInfoQuery> groupInfoMapper;
 
-    //@Resource
-    //private UserContactMapper<UserContact, UserContactQuery> userContactMapper;
+    @Resource
+    private UserContactMapper<UserContact, UserContactQuery> userContactMapper;
 
     @Resource
     private RedisComponet redisComponet;
@@ -60,8 +63,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     //@Resource
     //private MessageHandler messageHandler;
 
-    //@Resource
-    //private UserContactService userContactService;
+    @Resource
+    private UserContactService userContactService;
 
     @Resource
     private UserInfoBeautyMapper<UserInfoBeauty, UserInfoBeautyQuery> userInfoBeautyMapper;
@@ -244,18 +247,19 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new BusinessException("账号已禁用");
         }
 
-        //TODO 查询我的群组 查询我的联系人
-        /*
+        //查询我的群组 查询我的联系人
         UserContactQuery contactQuery = new UserContactQuery();
         contactQuery.setUserId(userInfo.getUserId());
         contactQuery.setStatusArray(new Integer[]{UserContactStatusEnum.FRIEND.getStatus()});
         List<UserContact> contactList = userContactMapper.selectList(contactQuery);
-        List<String> contactIdList = contactList.stream().map(item -> item.getContactId()).collect(Collectors.toList());
-
+        List<String> contactIdList = contactList.stream()
+                .map(item -> item.getContactId()).collect(Collectors.toList());
+        //清除redis中联系人信息
         redisComponet.cleanUserContact(userInfo.getUserId());
+        //批量添加到redis中
         if (!contactIdList.isEmpty()) {
             redisComponet.addUserContactBatch(userInfo.getUserId(), contactIdList);
-        }*/
+        }
 
         //获取tokenUserInfoDto
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfoDto(userInfo);

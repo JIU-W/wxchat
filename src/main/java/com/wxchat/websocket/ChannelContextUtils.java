@@ -80,7 +80,7 @@ public class ChannelContextUtils {
             }
             channel.attr(attributeKey).set(userId);
 
-            //添加到群组通道
+            //从reids里面获取用户的群组，联系人信息
             List<String> contactList = redisComponet.getUserContactList(userId);
             //遍历群组，添加到群组通道
             for (String groupId : contactList) {
