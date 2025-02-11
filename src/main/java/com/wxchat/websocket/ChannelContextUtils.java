@@ -61,7 +61,7 @@ public class ChannelContextUtils {
     private UserContactApplyMapper<UserContactApply, UserContactApplyQuery> userContactApplyMapper;
 
     /**
-     * 用户加入通道
+     * 用户加入通道 (用户登录上线)
      * @param userId
      * @param channel
      */
@@ -90,6 +90,7 @@ public class ChannelContextUtils {
 
             //添加到用户通道
             USER_CONTEXT_MAP.put(userId, channel);
+            //保存用户心跳到redis中
             redisComponet.saveUserHeartBeat(userId);
 
             //更新用户最后连接时间
@@ -123,20 +124,21 @@ public class ChannelContextUtils {
             /**
              * 2、查询聊天消息
              */
-            //查询用户的联系人
+            //查询用户所有的联系人
             UserContactQuery contactQuery = new UserContactQuery();
             contactQuery.setContactType(UserContactTypeEnum.GROUP.getType());
             contactQuery.setUserId(userId);
             List<UserContact> groupContactList = userContactMapper.selectList(contactQuery);
-            List<String> groupIdList = groupContactList.stream().map(item -> item.getContactId()).collect(Collectors.toList());
+            List<String> groupIdList = groupContactList.stream()
+                    .map(item -> item.getContactId()).collect(Collectors.toList());
             //将自己也加进去
             groupIdList.add(userId);
 
             ChatMessageQuery messageQuery = new ChatMessageQuery();
             messageQuery.setContactIdList(groupIdList);
             messageQuery.setLastReceiveTime(lastOffTime);
-            //List<ChatMessage> chatMessageList = chatMessageMapper.selectList(messageQuery);
-            //wsInitData.setChatMessageList(chatMessageList);
+            List<ChatMessage> chatMessageList = chatMessageMapper.selectList(messageQuery);
+            wsInitData.setChatMessageList(chatMessageList);
 
             /**
              * 3、查询好友申请

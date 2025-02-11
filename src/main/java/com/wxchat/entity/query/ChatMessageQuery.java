@@ -86,7 +86,7 @@ public class ChatMessageQuery extends BaseParam {
      */
     private Integer status;
 
-
+    //接收联系人ID集合
     private List<String> contactIdList;
 
     private Long lastReceiveTime;

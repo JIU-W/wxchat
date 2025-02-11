@@ -102,7 +102,7 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
             //走到这里就说明连接没有被断开
 
             /**
-             * 用户加入
+             * 用户加入 (用户在客户端登录账号的时候会走到这里)
              */
             channelContextUtils.addContext(tokenUserInfoDto.getUserId(), ctx.channel());
         }
