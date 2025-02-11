@@ -75,6 +75,7 @@ public class Constants {
     //用户参与的会话列表
     public static final String REDIS_KEY_USER_SESSION = "easychat:ws:user:session:";
 
+    //3天前
     public static final Long MILLISECOND_3DAYS_AGO = 3 * 24 * 60 * 60 * 1000L;
 
     public static final String ROBOT_UID = UserContactTypeEnum.USER.getPrefix() + "robot";

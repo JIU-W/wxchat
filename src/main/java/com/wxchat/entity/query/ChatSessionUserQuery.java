@@ -35,6 +35,7 @@ public class ChatSessionUserQuery extends BaseParam {
 
     private String contactNameFuzzy;
 
+    //最后接收消息时间
     private Long lastReceiveTime;
 
     public Long getLastReceiveTime() {

@@ -9,9 +9,7 @@ import com.wxchat.entity.enums.UserContactApplyStatusEnum;
 import com.wxchat.entity.enums.UserContactTypeEnum;
 import com.wxchat.entity.po.*;
 import com.wxchat.entity.query.*;
-import com.wxchat.mappers.UserContactApplyMapper;
-import com.wxchat.mappers.UserContactMapper;
-import com.wxchat.mappers.UserInfoMapper;
+import com.wxchat.mappers.*;
 import com.wxchat.redis.RedisComponet;
 import com.wxchat.utils.JsonUtils;
 import com.wxchat.utils.StringTools;
@@ -47,11 +45,11 @@ public class ChannelContextUtils {
     //群组通道
     public static final ConcurrentMap<String, ChannelGroup> GROUP_CONTEXT_MAP = new ConcurrentHashMap();
 
-    //@Resource
-    //private ChatSessionUserMapper<ChatSessionUser, ChatSessionUserQuery> chatSessionUserMapper;
+    @Resource
+    private ChatSessionUserMapper<ChatSessionUser, ChatSessionUserQuery> chatSessionUserMapper;
 
-    //@Resource
-    //private ChatMessageMapper<ChatMessage, ChatMessageQuery> chatMessageMapper;
+    @Resource
+    private ChatMessageMapper<ChatMessage, ChatMessageQuery> chatMessageMapper;
 
     @Resource
     private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
@@ -100,26 +98,27 @@ public class ChannelContextUtils {
             userInfoMapper.updateByUserId(updateInfo, userId);
 
             //给用户发送一些消息
-
             //获取用户最后离线时间
             UserInfo userInfo = userInfoMapper.selectByUserId(userId);
             Long sourceLastOffTime = userInfo.getLastOffTime();
             //这里避免毫秒时间差，所以减去1秒的时间
             //如果时间太久，只取最近三天的消息数
             Long lastOffTime = sourceLastOffTime;
-            if (sourceLastOffTime != null && System.currentTimeMillis() - Constants.MILLISECOND_3DAYS_AGO > sourceLastOffTime) {
+            if (sourceLastOffTime != null &&
+                    System.currentTimeMillis() - Constants.MILLISECOND_3DAYS_AGO > sourceLastOffTime) {
                 lastOffTime = Constants.MILLISECOND_3DAYS_AGO;
             }
 
             /**
-             * 1、查询会话信息 查询用户所有会话，避免换设备会话不同步
+             * 1、查询会话信息(查询用户所有会话，避免换设备会话不同步)
              */
             ChatSessionUserQuery sessionUserQuery = new ChatSessionUserQuery();
             sessionUserQuery.setUserId(userId);
             sessionUserQuery.setOrderBy("last_receive_time desc");
-            //List<ChatSessionUser> chatSessionList = chatSessionUserMapper.selectList(sessionUserQuery);
+            List<ChatSessionUser> chatSessionList = chatSessionUserMapper.selectList(sessionUserQuery);
             WsInitData wsInitData = new WsInitData();
-            //wsInitData.setChatSessionList(chatSessionList);
+            //设置会话信息
+            wsInitData.setChatSessionList(chatSessionList);
 
             /**
              * 2、查询聊天消息
@@ -149,13 +148,15 @@ public class ChannelContextUtils {
             Integer applyCount = userContactApplyMapper.selectCount(applyQuery);
             wsInitData.setApplyCount(applyCount);
 
-            //发送消息
+            /**
+             * 4、发送消息
+             */
             MessageSendDto messageSendDto = new MessageSendDto();
             messageSendDto.setMessageType(MessageTypeEnum.INIT.getType());
             messageSendDto.setContactId(userId);
             messageSendDto.setExtendData(wsInitData);
-
             sendMsg(messageSendDto, userId);
+
         } catch (Exception e) {
             logger.error("初始化链接失败", e);
         }
@@ -164,15 +165,18 @@ public class ChannelContextUtils {
 
     /**
      * 删除通道连接异常
-     *
      * @param channel
      */
     public void removeContext(Channel channel) {
+        //获取属性
         Attribute<String> attribute = channel.attr(AttributeKey.valueOf(channel.id().toString()));
+        //获取属性的值:userId
         String userId = attribute.get();
         if (!StringTools.isEmpty(userId)) {
+            //从用户通道中删除
             USER_CONTEXT_MAP.remove(userId);
         }
+        //删除redis里面用户心跳
         redisComponet.removeUserHeartBeat(userId);
 
         //更新用户最后断线时间

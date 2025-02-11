@@ -7,8 +7,14 @@ import com.wxchat.entity.po.ChatSessionUser;
 import java.util.List;
 
 public class WsInitData {
+
+    //会话列表
     private List<ChatSessionUser> chatSessionList;
+
+    //离线消息列表
     private List<ChatMessage> chatMessageList;
+
+    //申请消息数量
     private Integer applyCount;
 
     public List<ChatSessionUser> getChatSessionList() {
