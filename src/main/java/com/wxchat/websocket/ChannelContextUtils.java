@@ -100,6 +100,7 @@ public class ChannelContextUtils {
             userInfoMapper.updateByUserId(updateInfo, userId);
 
             //给用户发送一些消息
+
             //获取用户最后离线时间
             UserInfo userInfo = userInfoMapper.selectByUserId(userId);
             Long sourceLastOffTime = userInfo.getLastOffTime();
