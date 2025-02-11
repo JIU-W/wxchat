@@ -7,29 +7,42 @@ import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MessageSendDto<T> implements Serializable {
+
     private static final long serialVersionUID = -1045752033171142417L;
+
     //消息ID
     private Long messageId;
+
     //会话ID
     private String sessionId;
+
     //发送人
     private String sendUserId;
+
     //发送人昵称
     private String sendUserNickName;
+
     //联系人ID
     private String contactId;
+
     //联系人名称
     private String contactName;
+
     //消息内容
     private String messageContent;
+
     //最后的消息
     private String lastMessage;
+
     //消息类型
     private Integer messageType;
+
     //发送时间
     private Long sendTime;
+
     //联系人类型
     private Integer contactType;
+
     //扩展信息
     private T extendData;
 

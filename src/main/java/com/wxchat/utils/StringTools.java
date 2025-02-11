@@ -107,11 +107,13 @@ public class StringTools {
         return UserContactTypeEnum.USER.getPrefix() + getRandomNumber(Constants.LENGTH_11);
     }
 
+    //获取聊天会话id
     public static final String getChatSessionId4User(String[] userIds) {
         Arrays.sort(userIds);
         return encodeByMD5(StringUtils.join(userIds, ""));
     }
 
+    //清除html标签
     public static String cleanHtmlTag(String content) {
         if (isEmpty(content)) {
             return content;

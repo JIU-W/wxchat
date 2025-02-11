@@ -31,12 +31,15 @@ public class ChatSessionUser implements Serializable {
      */
     private String contactName;
 
+    //最后接收的消息
     private String lastMessage;
 
+    //最后接收的消息时间
     private Long lastReceiveTime;
 
     private Integer contactType;
 
+    //群组成员数量
     private Integer memberCount;
 
     public Integer getMemberCount() {

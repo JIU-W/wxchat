@@ -95,5 +95,9 @@ public interface UserContactService {
 
     void removeGroupContact(String userId, String groupId, String contactId, UserContactStatusEnum statusEnum);
 
+    /**
+     * 创建机器人好友
+     */
     void addContact4Robot(String userId);
+
 }

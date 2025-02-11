@@ -155,6 +155,7 @@ public class ChannelContextUtils {
             messageSendDto.setMessageType(MessageTypeEnum.INIT.getType());
             messageSendDto.setContactId(userId);
             messageSendDto.setExtendData(wsInitData);
+
             sendMsg(messageSendDto, userId);
 
         } catch (Exception e) {
@@ -260,7 +261,7 @@ public class ChannelContextUtils {
         if (sendChannel == null) {
             return;
         }
-        //相当于客户而言，联系人就是发送人，所以这里转换一下再发送,好友打招呼信息发送给自己需要特殊处理
+        //相当于客户端而言，联系人就是发送人，所以这里转换一下再发送,好友打招呼信息发送给自己需要特殊处理
         if (MessageTypeEnum.ADD_FRIEND_SELF.getType().equals(messageSendDto.getMessageType())) {
             UserInfo userInfo = (UserInfo) messageSendDto.getExtendData();
             messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND.getType());
@@ -271,6 +272,7 @@ public class ChannelContextUtils {
             messageSendDto.setContactId(messageSendDto.getSendUserId());
             messageSendDto.setContactName(messageSendDto.getSendUserNickName());
         }
+        //发送消息
         sendChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.convertObj2Json(messageSendDto)));
     }
 

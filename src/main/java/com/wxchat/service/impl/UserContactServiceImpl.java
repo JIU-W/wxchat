@@ -8,13 +8,12 @@ import com.wxchat.entity.po.*;
 import com.wxchat.entity.query.*;
 import com.wxchat.entity.vo.PaginationResultVO;
 import com.wxchat.exception.BusinessException;
-import com.wxchat.mappers.GroupInfoMapper;
-import com.wxchat.mappers.UserContactMapper;
-import com.wxchat.mappers.UserInfoMapper;
+import com.wxchat.mappers.*;
 import com.wxchat.redis.RedisComponet;
 import com.wxchat.service.UserContactService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
+import com.wxchat.websocket.ChannelContextUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +41,7 @@ public class UserContactServiceImpl implements UserContactService {
     @Resource
     private RedisComponet redisComponet;
 
-    /*@Resource
+    @Resource
     private ChatSessionMapper<ChatSession, ChatSessionQuery> chatSessionMapper;
 
     @Resource
@@ -51,11 +50,11 @@ public class UserContactServiceImpl implements UserContactService {
     @Resource
     private ChatMessageMapper<ChatMessage, ChatMessageQuery> chatMessageMapper;
 
-    @Resource
-    private MessageHandler messageHandler;
+    //@Resource
+    //private MessageHandler messageHandler;
 
     @Resource
-    private ChannelContextUtils channelContextUtils;*/
+    private ChannelContextUtils channelContextUtils;
 
 
     /**
@@ -416,7 +415,7 @@ public class UserContactServiceImpl implements UserContactService {
         redisComponet.removeUserContact(contactId, groupId);
     }
 
-    @Override
+
     @Transactional(rollbackFor = Exception.class)
     public void addContact4Robot(String userId) {
         Date curDate = new Date();
@@ -425,7 +424,9 @@ public class UserContactServiceImpl implements UserContactService {
         String contactId = sysSettingDto.getRobotUid();
         String contactName = sysSettingDto.getRobotNickName();
         String senMessage = sysSettingDto.getRobotWelcome();
+        //清理html标签
         senMessage = StringTools.cleanHtmlTag(senMessage);
+
         //增加机器人好友
         UserContact userContact = new UserContact();
         userContact.setUserId(userId);
@@ -437,19 +438,20 @@ public class UserContactServiceImpl implements UserContactService {
         userContactMapper.insert(userContact);
 
         //增加会话信息
-        String sessionId = StringTools.getChatSessionId4User(new String[]{userId, contactId});
+        String sessionId = StringTools.getChatSessionId4User(new String[]{userId, contactId});//获取会话id
         ChatSession chatSession = new ChatSession();
         chatSession.setLastMessage(senMessage);
         chatSession.setSessionId(sessionId);
         chatSession.setLastReceiveTime(curDate.getTime());
-        //this.chatSessionMapper.insert(chatSession);
+        this.chatSessionMapper.insert(chatSession);
 
+        //增加会话人信息
         ChatSessionUser applySessionUser = new ChatSessionUser();
         applySessionUser.setUserId(userId);
         applySessionUser.setContactId(contactId);
         applySessionUser.setContactName(contactName);
         applySessionUser.setSessionId(sessionId);
-        //this.chatSessionUserMapper.insertOrUpdate(applySessionUser);
+        this.chatSessionUserMapper.insertOrUpdate(applySessionUser);
 
         //增加聊天消息
         ChatMessage chatMessage = new ChatMessage();
@@ -462,7 +464,7 @@ public class UserContactServiceImpl implements UserContactService {
         chatMessage.setContactId(userId);
         chatMessage.setContactType(UserContactTypeEnum.USER.getType());
         chatMessage.setStatus(MessageStatusEnum.SENDED.getStatus());
-        //chatMessageMapper.insert(chatMessage);
+        chatMessageMapper.insert(chatMessage);
     }
 
 }
