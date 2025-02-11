@@ -247,7 +247,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new BusinessException("账号已禁用");
         }
 
-        //查询我的群组 查询我的联系人
+        //查询我的联系人：(好友，群组)
         UserContactQuery contactQuery = new UserContactQuery();
         contactQuery.setUserId(userInfo.getUserId());
         contactQuery.setStatusArray(new Integer[]{UserContactStatusEnum.FRIEND.getStatus()});

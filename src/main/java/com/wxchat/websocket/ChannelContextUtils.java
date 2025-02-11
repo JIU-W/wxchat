@@ -63,7 +63,7 @@ public class ChannelContextUtils {
     private UserContactApplyMapper<UserContactApply, UserContactApplyQuery> userContactApplyMapper;
 
     /**
-     * 加入通道
+     * 用户加入通道
      * @param userId
      * @param channel
      */
@@ -80,11 +80,12 @@ public class ChannelContextUtils {
             }
             channel.attr(attributeKey).set(userId);
 
-            //从reids里面获取用户的群组，联系人信息
+            //从redis里面获取用户的联系人信息(好友，群组)
             List<String> contactList = redisComponet.getUserContactList(userId);
             //遍历群组，添加到群组通道
             for (String groupId : contactList) {
                 if (groupId.startsWith(UserContactTypeEnum.GROUP.getPrefix())) {
+                    //添加到群组通道
                     add2Group(groupId, channel);
                 }
             }
@@ -157,6 +158,7 @@ public class ChannelContextUtils {
         } catch (Exception e) {
             logger.error("初始化链接失败", e);
         }
+
     }
 
     /**
