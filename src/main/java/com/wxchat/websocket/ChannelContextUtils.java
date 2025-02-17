@@ -110,8 +110,6 @@ public class ChannelContextUtils {
                 lastOffTime = Constants.MILLISECOND_3DAYS_AGO;
             }
 
-
-
             /**
              * 1、查询会话信息(查询用户所有会话，避免换设备会话不同步)
              */
