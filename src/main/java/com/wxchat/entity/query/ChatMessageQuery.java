@@ -89,6 +89,7 @@ public class ChatMessageQuery extends BaseParam {
     //接收联系人ID集合
     private List<String> contactIdList;
 
+    //最后接收时间
     private Long lastReceiveTime;
 
     public void setMessageId(Long messageId) {

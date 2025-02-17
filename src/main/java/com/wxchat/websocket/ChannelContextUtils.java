@@ -128,16 +128,24 @@ public class ChannelContextUtils {
             UserContactQuery contactQuery = new UserContactQuery();
             contactQuery.setContactType(UserContactTypeEnum.GROUP.getType());
             contactQuery.setUserId(userId);
+            //查询所有群组
             List<UserContact> groupContactList = userContactMapper.selectList(contactQuery);
+            //获取群组id集合
             List<String> groupIdList = groupContactList.stream()
                     .map(item -> item.getContactId()).collect(Collectors.toList());
-            //将自己也加进去
+            //将自己也加进去 原因是为了查询用户离线消息(接收人就是 用户加入的群组接受的消息 以及 用户接受的消息)
             groupIdList.add(userId);
 
+            //groupIdList:用户加入的所有群组id 和 自己的id
+
             ChatMessageQuery messageQuery = new ChatMessageQuery();
+            //设置(查询条件：接收联系人)为groupIdList(用户加入的所有群组id 和 自己的id)
             messageQuery.setContactIdList(groupIdList);
+            //设置(查询条件：最后接收时间)为lastOffTime(小于等于三天)
             messageQuery.setLastReceiveTime(lastOffTime);
+            //查询符合条件的"聊天消息集合"
             List<ChatMessage> chatMessageList = chatMessageMapper.selectList(messageQuery);
+            //
             wsInitData.setChatMessageList(chatMessageList);
 
             /**
