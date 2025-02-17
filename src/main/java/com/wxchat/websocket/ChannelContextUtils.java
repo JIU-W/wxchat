@@ -121,7 +121,6 @@ public class ChannelContextUtils {
             //设置会话信息
             wsInitData.setChatSessionList(chatSessionList);
 
-
             /**
              * 2、查询聊天消息
              */
