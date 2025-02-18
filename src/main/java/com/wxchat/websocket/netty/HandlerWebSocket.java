@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 /**
- * @description ws 业务处理
+ * @description  ws业务处理  (自定义websocket处理器)
  * @author JIU-W
  * @date 2025-02-09
  * @version 1.0
@@ -42,7 +42,8 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
     /**
      * 当通道就绪后会调用此方法，通常我们会在这里做一些初始化操作
-     *            (用户登录上线的时候就会自动调用这个方法)
+     * (用户登录上线的时候就会自动调用这个方法)
+     *
      * @param ctx
      */
     @Override
@@ -53,7 +54,7 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
     /**
      * 当通道不再活跃时（连接关闭）会调用此方法，我们可以在这里做一些清理工作
-     *             (用户退出登录的时候就会自动调用这个方法)
+     * (用户退出登录的时候就会自动调用这个方法)
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
@@ -63,7 +64,9 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     }
 
     /**
-     * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。  (用于接收心跳)
+     * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。
+     * (用于接收心跳)
+     *
      * @param ctx
      * @param textWebSocketFrame
      */

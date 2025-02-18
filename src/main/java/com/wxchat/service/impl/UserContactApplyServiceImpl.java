@@ -250,9 +250,10 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
         //发送ws消息
         if (dbApply == null || !UserContactApplyStatusEnum.INIT.getStatus().equals(dbApply.getStatus())) {
             //如果是待处理状态就不发消息，避免重复发送
-            //TODO 发送ws消息
+
+            //发送ws消息
             MessageSendDto messageSend = new MessageSendDto();
-            messageSend.setMessageType(MessageTypeEnum.CONTACT_APPLY.getType());
+            messageSend.setMessageType(MessageTypeEnum.CONTACT_APPLY.getType());//"好友申请"类型
             messageSend.setMessageContent(applyInfo);
             messageSend.setContactId(receiveUserId);
             //messageHandler.sendMessage(messageSend);

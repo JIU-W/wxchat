@@ -31,6 +31,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+/**
+ * @description ws通道工具类
+ * @author JIU-W
+ * @date 2025-02-18
+ * @version 1.0
+ */
 @Component("channelContextUtils")
 public class ChannelContextUtils {
 
@@ -39,7 +45,7 @@ public class ChannelContextUtils {
     @Resource
     private RedisComponet redisComponet;
 
-    //用户通道
+    //用户通道   基于服务器内存存储，使用Map集合存储。
     public static final ConcurrentMap<String, Channel> USER_CONTEXT_MAP = new ConcurrentHashMap();
 
     //群组通道
@@ -275,6 +281,7 @@ public class ChannelContextUtils {
         if (sendChannel == null) {
             return;
         }
+
         //相当于客户端而言，联系人就是发送人，所以这里转换一下再发送，好友打招呼信息发送给自己需要特殊处理
         if (MessageTypeEnum.ADD_FRIEND_SELF.getType().equals(messageSendDto.getMessageType())) {
             UserInfo userInfo = (UserInfo) messageSendDto.getExtendData();

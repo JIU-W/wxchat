@@ -22,7 +22,7 @@ public class MessageSendDto<T> implements Serializable {
     //发送人昵称
     private String sendUserNickName;
 
-    //联系人ID
+    //联系人ID (消息接收人ID)：群组ID或者好友ID
     private String contactId;
 
     //联系人名称
