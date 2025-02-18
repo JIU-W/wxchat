@@ -1,6 +1,7 @@
 package com.wxchat.websocket.netty;
 
 import com.wxchat.entity.config.AppConfig;
+import com.wxchat.utils.StringTools;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -95,8 +97,14 @@ public class NettyWebSocketStarter implements Runnable {
                             pipeline.addLast(handlerWebSocket);
                         }
                     });
+            //以下对ws端口的处理是为了"模拟"在本机一个服务器的条件下"实现项目服务的集群"(多个server)
+            Integer wsPort = appConfig.getWsPort();
+            String wsPortStr = System.getProperty("ws.port");
+            if(!StringTools.isEmpty(wsPortStr)){
+                wsPort = Integer.parseInt(wsPortStr);
+            }
             //启动
-            ChannelFuture channelFuture = serverBootstrap.bind(appConfig.getWsPort()).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(wsPort).sync();
             logger.info("Netty服务端启动成功,端口:{}", appConfig.getWsPort());
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
