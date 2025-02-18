@@ -42,16 +42,18 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
     /**
      * 当通道就绪后会调用此方法，通常我们会在这里做一些初始化操作
+     *            (用户登录上线的时候就会自动调用这个方法)
      * @param ctx
      */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        //Channel channel = ctx.channel();
+        Channel channel = ctx.channel();
         logger.info("有新的连接加入。。。");
     }
 
     /**
      * 当通道不再活跃时（连接关闭）会调用此方法，我们可以在这里做一些清理工作
+     *             (用户退出登录的时候就会自动调用这个方法)
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {

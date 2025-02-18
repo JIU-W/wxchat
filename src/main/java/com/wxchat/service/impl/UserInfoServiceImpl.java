@@ -233,7 +233,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             updateBeauty.setStatus(BeautyAccountStatusEnum.USEED.getStatus());
             this.userInfoBeautyMapper.updateById(updateBeauty, beautyAccount.getId());
         }
-        //创建机器人好友
+        //创建机器人好友！！！
         userContactService.addContact4Robot(userId);
     }
 
