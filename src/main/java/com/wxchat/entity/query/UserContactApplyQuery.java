@@ -58,6 +58,7 @@ public class UserContactApplyQuery extends BaseParam {
     //是否关联查询申请联系人的具体信息：(申请人昵称、群组名称)
     private Boolean queryContactInfo;
 
+    //
     private Long lastApplyTimestamp;
 
     public Long getLastApplyTimestamp() {

@@ -128,15 +128,16 @@ public class ChannelContextUtils {
             UserContactQuery contactQuery = new UserContactQuery();
             contactQuery.setContactType(UserContactTypeEnum.GROUP.getType());
             contactQuery.setUserId(userId);
-            //查询所有群组
+            //查询该用户加入的所有群组
             List<UserContact> groupContactList = userContactMapper.selectList(contactQuery);
             //获取群组id集合
             List<String> groupIdList = groupContactList.stream()
                     .map(item -> item.getContactId()).collect(Collectors.toList());
-            //将自己也加进去 原因是为了查询用户离线消息(接收人就是 用户加入的群组接受的消息 以及 用户接受的消息)
+            //将自己也加进去
             groupIdList.add(userId);
 
-            //groupIdList:用户加入的所有群组id 和 自己的id
+            //groupIdList("用户加入的所有群组id"和"自己的id")：
+            //原因是为了查询用户离线消息(接收人就是"该用户加入的群组接受的消息"以及"该用户接受的消息")
 
             ChatMessageQuery messageQuery = new ChatMessageQuery();
             //设置(查询条件：接收联系人)为groupIdList(用户加入的所有群组id 和 自己的id)
@@ -145,17 +146,19 @@ public class ChannelContextUtils {
             messageQuery.setLastReceiveTime(lastOffTime);
             //查询符合条件的"聊天消息集合"
             List<ChatMessage> chatMessageList = chatMessageMapper.selectList(messageQuery);
-            //
+            //设置"离线消息列表"到wsInitData
             wsInitData.setChatMessageList(chatMessageList);
 
             /**
-             * 3、查询好友申请
+             * 3、查询好友申请数量
              */
             UserContactApplyQuery applyQuery = new UserContactApplyQuery();
             applyQuery.setReceiveUserId(userId);
+            //设置为sourceLastOffTime(用户最后离线时间)
             applyQuery.setLastApplyTimestamp(sourceLastOffTime);
             applyQuery.setStatus(UserContactApplyStatusEnum.INIT.getStatus());
             Integer applyCount = userContactApplyMapper.selectCount(applyQuery);
+            //设置"好友申请的消息数量"到wsInitData
             wsInitData.setApplyCount(applyCount);
 
             /**

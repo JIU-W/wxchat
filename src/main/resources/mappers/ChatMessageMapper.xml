@@ -114,10 +114,13 @@
             </if>
             <!--额外添加的查询条件-->
             <if test="query.lastReceiveTime!=null">
-                and send_time>=#{query.lastReceiveTime}
+                and send_time >= #{query.lastReceiveTime}
             </if>
-            <if test="query.contactIdList!=null and query.contactIdList.size()>0">
-                and contact_id in(<foreach collection="query.contactIdList" separator="," item="item">#{item}</foreach>)
+            <if test="query.contactIdList != null and query.contactIdList.size() > 0">
+                and contact_id in
+                (<foreach collection="query.contactIdList" separator="," item="item">
+                #{item}
+                </foreach>)
             </if>
         </where>
     </sql>

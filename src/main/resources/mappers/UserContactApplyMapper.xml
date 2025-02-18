@@ -80,11 +80,10 @@
             <if test="query.applyInfoFuzzy!= null  and query.applyInfoFuzzy!=''">
                 and apply_info like concat('%', #{query.applyInfoFuzzy}, '%')
             </if>
-
-            <if test="query.lastApplyTimestamp!=null">
-                and last_apply_time>=#{query.lastApplyTimestamp}
+            <!-- 额外补充的条件 -->
+            <if test="query.lastApplyTimestamp != null">
+                and last_apply_time >= #{query.lastApplyTimestamp}
             </if>
-
         </where>
     </sql>
 
