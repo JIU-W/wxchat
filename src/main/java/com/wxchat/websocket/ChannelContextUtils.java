@@ -45,10 +45,10 @@ public class ChannelContextUtils {
     @Resource
     private RedisComponet redisComponet;
 
-    //用户通道   基于服务器内存存储，使用Map集合存储。
+    //用户通道  基于服务器内存存储，使用Map集合存储。  (Channel：用户通道)
     public static final ConcurrentMap<String, Channel> USER_CONTEXT_MAP = new ConcurrentHashMap();
 
-    //群组通道
+    //群组通道        (ChannelGroup：群组通道)
     public static final ConcurrentMap<String, ChannelGroup> GROUP_CONTEXT_MAP = new ConcurrentHashMap();
 
     @Resource
@@ -206,25 +206,14 @@ public class ChannelContextUtils {
         userInfoMapper.updateByUserId(userInfo, userId);
     }
 
-    public void closeContext(String userId) {
-        if (StringTools.isEmpty(userId)) {
-            return;
-        }
-        redisComponet.cleanUserTokenByUserId(userId);
-        Channel channel = USER_CONTEXT_MAP.get(userId);
-        USER_CONTEXT_MAP.remove(userId);
-        if (channel != null) {
-            channel.close();
-        }
-    }
-
     public void sendMessage(MessageSendDto messageSendDto) {
+        //根据消息类型判断是发"单聊消息"还是"群聊消息"
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(messageSendDto.getContactId());
         switch (contactTypeEnum) {
-            case USER:
+            case USER: //发送消息给用户
                 send2User(messageSendDto);
                 break;
-            case GROUP:
+            case GROUP: //发送消息到群聊
                 sendMsg2Group(messageSendDto);
         }
     }
@@ -233,16 +222,39 @@ public class ChannelContextUtils {
      * 发送消息给用户
      */
     private void send2User(MessageSendDto messageSendDto) {
+        //获取消息接收人ID
         String contactId = messageSendDto.getContactId();
+        //发送消息
         sendMsg(messageSendDto, contactId);
         //强制下线
         if (MessageTypeEnum.FORCE_OFF_LINE.getType().equals(messageSendDto.getMessageType())) {
+            //关闭通道
             closeContext(contactId);
         }
     }
 
     /**
-     * 发送消息到组
+     * 关闭通道连接
+     * @param userId
+     */
+    public void closeContext(String userId) {
+        if (StringTools.isEmpty(userId)) {
+            return;
+        }
+        //清除用户token信息
+        redisComponet.cleanUserTokenByUserId(userId);
+        //从用户通道中获取channel
+        Channel channel = USER_CONTEXT_MAP.get(userId);
+        //从用户通道中删除
+        USER_CONTEXT_MAP.remove(userId);
+        if (channel != null) {
+            channel.close();//关闭channel
+        }
+    }
+
+
+    /**
+     * 发送消息到群组
      */
     private void sendMsg2Group(MessageSendDto messageSendDto) {
         if (messageSendDto.getContactId() == null) {

@@ -256,6 +256,7 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
             messageSend.setMessageType(MessageTypeEnum.CONTACT_APPLY.getType());//"好友申请"类型
             messageSend.setMessageContent(applyInfo);
             messageSend.setContactId(receiveUserId);
+            //
             //messageHandler.sendMessage(messageSend);
         }
         return joinType;

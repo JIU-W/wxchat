@@ -42,8 +42,8 @@ public class MessageHandler<T> {
         //监听消息
         rTopic.addListener(MessageSendDto.class, (MessageSendDto, sendDto) -> {
             logger.info("收到广播消息:{}", JSON.toJSONString(sendDto));
-            //发送消息
-            //channelContextUtils.sendMessage(sendDto);
+            //发送消息(拿到消息后去 )
+            channelContextUtils.sendMessage(sendDto);
         });
     }
 
