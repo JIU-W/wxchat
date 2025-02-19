@@ -83,7 +83,7 @@ public class RedisComponet {
         return redisUtils.getQueueList(Constants.REDIS_KEY_USER_CONTACT + userId);
     }
 
-    //添加用户联系人
+    //添加用户联系人：(好友、群组)
     public void addUserContact(String userId, String contactId) {
         List<String> contactList = redisUtils.getQueueList(Constants.REDIS_KEY_USER_CONTACT + userId);
         if (!contactList.contains(contactId)) {

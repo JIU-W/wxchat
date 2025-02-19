@@ -246,13 +246,14 @@ public class UserContactServiceImpl implements UserContactService {
         //批量加入
         userContactMapper.insertOrUpdateBatch(contactList);
 
-        //TODO 如果是好友申请,接收人也添加申请人为联系人  添加缓存
-        /*if (UserContactTypeEnum.USER.getType().equals(contactType)) {
+        //添加缓存:
+        //申请人添加联系人(好友或群组)
+        redisComponet.addUserContact(applyUserId, contactId);
+
+        //如果是好友申请，接收人也添加申请人为联系人(好友)
+        if (UserContactTypeEnum.USER.getType().equals(contactType)) {
             redisComponet.addUserContact(receiveUserId, applyUserId);
         }
-        //审核通过，将申请人的联系人添加上 我 或 群组
-        redisComponet.addUserContact(applyUserId, contactId);*/
-
 
         //TODO 创建会话信息
         /*String sessionId = null;
