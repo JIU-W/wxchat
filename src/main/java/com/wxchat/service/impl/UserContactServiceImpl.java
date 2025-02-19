@@ -322,7 +322,7 @@ public class UserContactServiceImpl implements UserContactService {
 
             //以下是发送消息部分
 
-            //封装messageSendDto
+            //封装messageSendDto的数据
             MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
             /**
              * 发送给接受好友申请的人
@@ -330,11 +330,14 @@ public class UserContactServiceImpl implements UserContactService {
             messageHandler.sendMessage(messageSendDto);
 
             /**
-             * 发送给申请人 (发送人就是接收人，联系人就是申请人)
+             * 发送给申请人 (因为这里是添加好友成功后，成功后，打招呼信息不仅要发给"接收人"的客户端，
+             * 同时也要发送给"申请人"的客户端，从而让"申请人的聊天会话框"也可以渲染这个打招呼信息)
+             *
+             * 给自己发送ws消息，把联系人(接收人)改成申请人从而找到channel。
              */
             messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND_SELF.getType());//
             messageSendDto.setContactId(applyUserId);//发送给申请人
-            messageSendDto.setExtendData(contactUser);
+            messageSendDto.setExtendData(contactUser);//扩展数据：扩展数据是"初始的接收人信息"。(这个数据后续有用)
             messageHandler.sendMessage(messageSendDto);
 
         } else {//群聊

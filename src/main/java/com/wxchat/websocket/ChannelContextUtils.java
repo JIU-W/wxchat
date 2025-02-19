@@ -307,6 +307,14 @@ public class ChannelContextUtils {
 
         //相当于客户端而言，联系人就是发送人，所以这里转换一下再发送，好友打招呼信息发送给自己需要特殊处理
         if (MessageTypeEnum.ADD_FRIEND_SELF.getType().equals(messageSendDto.getMessageType())) {
+            //特殊情况：添加好友同意后，"打招呼消息"发送给自己。
+
+            //获取"初始的接收人信息"
+            //TODO 也没懂这里的逻辑
+
+            //1.给自己发送ws消息，要把contactId设置为申请人联系人信息找到channel
+            //2.找到之后再通过传进来的"初始接收人信息"(扩展信息)更改一下contactId
+
             UserInfo userInfo = (UserInfo) messageSendDto.getExtendData();
             messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND.getType());
             messageSendDto.setContactId(userInfo.getUserId());
