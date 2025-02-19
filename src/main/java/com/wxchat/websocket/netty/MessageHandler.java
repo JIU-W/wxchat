@@ -13,7 +13,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 /**
- * @description 消息处理器
+ * @description 消息处理器   通过这个处理器(借用redisson来管理服务器)从而"实现跨服务器的消息发送与接收"。
+ *                                                                     (从而让服务器可以实现集群化部署)
  * @author JIU-W
  * @date 2025-02-18
  * @version 1.0
@@ -42,7 +43,7 @@ public class MessageHandler<T> {
         //监听消息
         rTopic.addListener(MessageSendDto.class, (MessageSendDto, sendDto) -> {
             logger.info("收到广播消息:{}", JSON.toJSONString(sendDto));
-            //发送消息(拿到消息后去 )
+            //发送消息，这里的是真正的调用工具类去实现单聊或者群聊的消息发送
             channelContextUtils.sendMessage(sendDto);
         });
     }

@@ -94,7 +94,7 @@ public class ChannelContextUtils {
                 }
             }
 
-            //添加到用户通道
+            //添加该用户的用户通道到map集合中
             USER_CONTEXT_MAP.put(userId, channel);
             //保存用户心跳到redis中
             redisComponet.saveUserHeartBeat(userId);
@@ -206,6 +206,10 @@ public class ChannelContextUtils {
         userInfoMapper.updateByUserId(userInfo, userId);
     }
 
+    /**
+     * 发送消息
+     * @param messageSendDto
+     */
     public void sendMessage(MessageSendDto messageSendDto) {
         //根据消息类型判断是发"单聊消息"还是"群聊消息"
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(messageSendDto.getContactId());
@@ -260,10 +264,12 @@ public class ChannelContextUtils {
         if (messageSendDto.getContactId() == null) {
             return;
         }
+        //从map集合中取出该群组对应的"通道"
         ChannelGroup group = GROUP_CONTEXT_MAP.get(messageSendDto.getContactId());
         if (group == null) {
             return;
         }
+        //群聊发送消息
         group.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(messageSendDto)));
 
         //移除群聊
@@ -282,6 +288,7 @@ public class ChannelContextUtils {
             GROUP_CONTEXT_MAP.remove(messageSendDto.getContactId());
             group.close();
         }
+
     }
 
 

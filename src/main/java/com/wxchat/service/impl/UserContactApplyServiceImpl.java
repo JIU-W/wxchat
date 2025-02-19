@@ -18,6 +18,7 @@ import com.wxchat.mappers.UserInfoMapper;
 import com.wxchat.service.UserContactApplyService;
 import com.wxchat.service.UserContactService;
 import com.wxchat.utils.StringTools;
+import com.wxchat.websocket.netty.MessageHandler;
 import jodd.util.ArraysUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +46,8 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
     @Resource
     private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
 
-    //@Resource
-    //private MessageHandler messageHandler;
+    @Resource
+    private MessageHandler messageHandler;
 
     @Resource
     private UserContactService userContactService;
@@ -256,8 +257,8 @@ public class UserContactApplyServiceImpl implements UserContactApplyService {
             messageSend.setMessageType(MessageTypeEnum.CONTACT_APPLY.getType());//"好友申请"类型
             messageSend.setMessageContent(applyInfo);
             messageSend.setContactId(receiveUserId);
-            //
-            //messageHandler.sendMessage(messageSend);
+            //这里是先把消息发到redis中
+            messageHandler.sendMessage(messageSend);
         }
         return joinType;
     }
