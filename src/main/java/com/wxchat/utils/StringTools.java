@@ -107,7 +107,7 @@ public class StringTools {
         return UserContactTypeEnum.USER.getPrefix() + getRandomNumber(Constants.LENGTH_11);
     }
 
-    //获取聊天会话id
+    //获取聊天会话id(单聊)
     public static final String getChatSessionId4User(String[] userIds) {
         Arrays.sort(userIds);
         return encodeByMD5(StringUtils.join(userIds, ""));
@@ -129,8 +129,12 @@ public class StringTools {
         return content;
     }
 
+    /**
+     * 获取群聊会话ID
+     */
     public static final String getChatSessionId4Group(String groupId) {
         return encodeByMD5(groupId);
     }
+
 }
 

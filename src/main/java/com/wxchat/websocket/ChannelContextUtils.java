@@ -45,7 +45,7 @@ public class ChannelContextUtils {
     @Resource
     private RedisComponet redisComponet;
 
-    //用户通道  基于服务器内存存储，使用Map集合存储。  (Channel：用户通道)
+    //用户通道  基于服务器内存存储，使用Map集合存储。  (Channel：用户通道，表示一个活跃的 WebSocket 连接通道)
     public static final ConcurrentMap<String, Channel> USER_CONTEXT_MAP = new ConcurrentHashMap();
 
     //群组通道        (ChannelGroup：群组通道)
@@ -291,13 +291,17 @@ public class ChannelContextUtils {
 
     }
 
-
+    /**
+     * 发送消息到用户(单聊)
+     * @param messageSendDto
+     * @param reciveId
+     */
     private static void sendMsg(MessageSendDto messageSendDto, String reciveId) {
         if (reciveId == null) {
             return;
         }
-        Channel sendChannel = USER_CONTEXT_MAP.get(reciveId);
-        if (sendChannel == null) {
+        Channel userChannel = USER_CONTEXT_MAP.get(reciveId);
+        if (userChannel == null) {
             return;
         }
 
@@ -308,12 +312,16 @@ public class ChannelContextUtils {
             messageSendDto.setContactId(userInfo.getUserId());
             messageSendDto.setContactName(userInfo.getNickName());
             messageSendDto.setExtendData(null);
-        } else {
+        } else {//一般的发消息情况都要进行以下的转换
+            //TODO 没懂这里的逻辑
+            //比如 B 发消息(MessageSendDto类)给 A 的时候，
+            //相对于A客户端而言，A的contactId(联系人id)就是B的userId，所以要将A的contactId设置成B的userId
             messageSendDto.setContactId(messageSendDto.getSendUserId());
             messageSendDto.setContactName(messageSendDto.getSendUserNickName());
         }
         //发送消息
-        sendChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.convertObj2Json(messageSendDto)));
+        //将数据写入通道并立即刷新(发送)，确保数据不滞留在缓冲区。
+        userChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.convertObj2Json(messageSendDto)));
     }
 
     //添加到群聊

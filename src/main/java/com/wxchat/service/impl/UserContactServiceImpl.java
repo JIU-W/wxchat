@@ -14,6 +14,7 @@ import com.wxchat.service.UserContactService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
 import com.wxchat.websocket.ChannelContextUtils;
+import com.wxchat.websocket.netty.MessageHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +51,8 @@ public class UserContactServiceImpl implements UserContactService {
     @Resource
     private ChatMessageMapper<ChatMessage, ChatMessageQuery> chatMessageMapper;
 
-    //@Resource
-    //private MessageHandler messageHandler;
+    @Resource
+    private MessageHandler messageHandler;
 
     @Resource
     private ChannelContextUtils channelContextUtils;
@@ -255,17 +256,20 @@ public class UserContactServiceImpl implements UserContactService {
             redisComponet.addUserContact(receiveUserId, applyUserId);
         }
 
-        //TODO 创建会话信息
-        /*String sessionId = null;
+        //创建会话信息
+        String sessionId = null;
         if (UserContactTypeEnum.USER.getType().equals(contactType)) {
+            //获取会话ID(单聊)
             sessionId = StringTools.getChatSessionId4User(new String[]{applyUserId, contactId});
         } else {
+            //获取会话ID(群聊)
             sessionId = StringTools.getChatSessionId4Group(contactId);
         }
 
         //会话参与人
         List<ChatSessionUser> chatSessionUserList = new ArrayList<>();
-        if (UserContactTypeEnum.USER.getType().equals(contactType)) {
+
+        if (UserContactTypeEnum.USER.getType().equals(contactType)) {//单聊
             //创建会话
             ChatSession chatSession = new ChatSession();
             chatSession.setSessionId(sessionId);
@@ -296,7 +300,7 @@ public class UserContactServiceImpl implements UserContactService {
             UserInfo applyUserInfo = this.userInfoMapper.selectByUserId(applyUserId);
             contactSessionUser.setContactName(applyUserInfo.getNickName());
             chatSessionUserList.add(contactSessionUser);
-            //this.chatSessionUserMapper.insertOrUpdateBatch(chatSessionUserList);
+            this.chatSessionUserMapper.insertOrUpdateBatch(chatSessionUserList);
 
             //记录消息消息表
             ChatMessage chatMessage = new ChatMessage();
@@ -309,23 +313,23 @@ public class UserContactServiceImpl implements UserContactService {
             chatMessage.setContactId(contactId);
             chatMessage.setContactType(UserContactTypeEnum.USER.getType());
             chatMessage.setStatus(MessageStatusEnum.SENDED.getStatus());
-            //chatMessageMapper.insert(chatMessage);
+            chatMessageMapper.insert(chatMessage);
 
             MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
-            *//**
+            /**
              * 发送给接受好友申请的人
-             *//*
-            //messageHandler.sendMessage(messageSendDto);
+             */
+            messageHandler.sendMessage(messageSendDto);
 
-            *//**
+            /**
              * 发送给申请人 发送人就是接收人，联系人就是申请人
-             *//*
+             */
             messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND_SELF.getType());
             messageSendDto.setContactId(applyUserId);
             messageSendDto.setExtendData(contactUser);
-            //messageHandler.sendMessage(messageSendDto);
+            messageHandler.sendMessage(messageSendDto);
 
-        } else {
+        } else {//群聊
             //加入群组
             ChatSessionUser chatSessionUser = new ChatSessionUser();
             chatSessionUser.setUserId(applyUserId);
@@ -333,12 +337,12 @@ public class UserContactServiceImpl implements UserContactService {
             GroupInfo groupInfo = this.groupInfoMapper.selectByGroupId(contactId);
             chatSessionUser.setContactName(groupInfo.getGroupName());
             chatSessionUser.setSessionId(sessionId);
-            //this.chatSessionUserMapper.insertOrUpdate(chatSessionUser);
+            this.chatSessionUserMapper.insertOrUpdate(chatSessionUser);
 
             //将群组加入到用户的联系人列表
             redisComponet.addUserContact(applyUserId, groupInfo.getGroupId());
 
-            //channelContextUtils.addUser2Group(applyUserId, groupInfo.getGroupId());
+            channelContextUtils.addUser2Group(applyUserId, groupInfo.getGroupId());
 
 
             UserInfo applyUserInfo = this.userInfoMapper.selectByUserId(applyUserId);
@@ -350,7 +354,7 @@ public class UserContactServiceImpl implements UserContactService {
             chatSession.setSessionId(sessionId);
             chatSession.setLastReceiveTime(curDate.getTime());
             chatSession.setLastMessage(sendMessage);
-            //this.chatSessionMapper.insertOrUpdate(chatSession);
+            this.chatSessionMapper.insertOrUpdate(chatSession);
 
             //增加聊天消息
             ChatMessage chatMessage = new ChatMessage();
@@ -363,7 +367,7 @@ public class UserContactServiceImpl implements UserContactService {
             chatMessage.setContactId(contactId);
             chatMessage.setContactType(UserContactTypeEnum.GROUP.getType());
             chatMessage.setStatus(MessageStatusEnum.SENDED.getStatus());
-            //chatMessageMapper.insert(chatMessage);
+            chatMessageMapper.insert(chatMessage);
 
             //发送群消息
             MessageSendDto messageSend = CopyTools.copy(chatMessage, MessageSendDto.class);
@@ -375,8 +379,8 @@ public class UserContactServiceImpl implements UserContactService {
             Integer memberCount = this.userContactMapper.selectCount(userContactQuery);
             messageSend.setMemberCount(memberCount);
             messageSend.setContactName(groupInfo.getGroupName());
-            //messageHandler.sendMessage(messageSend);
-        }*/
+            messageHandler.sendMessage(messageSend);
+        }
 
     }
 
