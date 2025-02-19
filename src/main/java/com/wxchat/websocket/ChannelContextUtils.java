@@ -307,7 +307,7 @@ public class ChannelContextUtils {
 
         //相当于客户端而言，联系人就是发送人，所以这里转换一下再发送，好友打招呼信息发送给自己需要特殊处理
         if (MessageTypeEnum.ADD_FRIEND_SELF.getType().equals(messageSendDto.getMessageType())) {
-            //特殊情况：添加好友同意后，"打招呼消息"发送给自己。
+            //if里面的特殊情况：添加好友同意后，"打招呼消息"发送给自己。
 
             //获取"初始的接收人信息"
             //TODO 也没懂这里的逻辑
@@ -320,7 +320,9 @@ public class ChannelContextUtils {
             messageSendDto.setContactId(userInfo.getUserId());
             messageSendDto.setContactName(userInfo.getNickName());
             messageSendDto.setExtendData(null);
-        } else {//一般的发消息情况都要进行以下的转换
+        } else {
+            //一般的发消息情况都要进行以下的转换
+
             //TODO 没懂这里的逻辑
             //比如 B 发消息(MessageSendDto类)给 A 的时候，
             //相对于A客户端而言，A的contactId(联系人id)就是B的userId，所以要将A的contactId设置成B的userId

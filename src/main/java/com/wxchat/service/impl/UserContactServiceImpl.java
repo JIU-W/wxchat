@@ -335,6 +335,7 @@ public class UserContactServiceImpl implements UserContactService {
              *
              * 给自己发送ws消息，把联系人(接收人)改成申请人从而找到channel。
              */
+            //TODO 没完全理解
             messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND_SELF.getType());//
             messageSendDto.setContactId(applyUserId);//发送给申请人
             messageSendDto.setExtendData(contactUser);//扩展数据：扩展数据是"初始的接收人信息"。(这个数据后续有用)
