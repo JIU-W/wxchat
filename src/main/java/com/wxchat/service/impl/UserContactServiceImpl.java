@@ -14,7 +14,7 @@ import com.wxchat.service.UserContactService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
 import com.wxchat.websocket.ChannelContextUtils;
-import com.wxchat.websocket.netty.MessageHandler;
+import com.wxchat.websocket.MessageHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

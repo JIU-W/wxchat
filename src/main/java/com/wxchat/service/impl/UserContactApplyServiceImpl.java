@@ -18,7 +18,7 @@ import com.wxchat.mappers.UserInfoMapper;
 import com.wxchat.service.UserContactApplyService;
 import com.wxchat.service.UserContactService;
 import com.wxchat.utils.StringTools;
-import com.wxchat.websocket.netty.MessageHandler;
+import com.wxchat.websocket.MessageHandler;
 import jodd.util.ArraysUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

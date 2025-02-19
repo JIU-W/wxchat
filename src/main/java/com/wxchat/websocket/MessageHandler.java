@@ -1,8 +1,7 @@
-package com.wxchat.websocket.netty;
+package com.wxchat.websocket;
 
 import com.alibaba.fastjson.JSON;
 import com.wxchat.entity.dto.MessageSendDto;
-import com.wxchat.websocket.ChannelContextUtils;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;

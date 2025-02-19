@@ -28,7 +28,8 @@ public class RedisConfig<V> {
         try {
             // 创建配置 指定redis地址及节点信息
             Config config = new Config();
-            config.useSingleServer().setAddress("redis://" + redisHost + ":" + redisPort);
+            config.useSingleServer().setAddress("redis://" + redisHost + ":" + redisPort)
+                    .setPassword("123456");
             // 根据config创建出RedissonClient实例
             RedissonClient redissonClient = Redisson.create(config);
             return redissonClient;
