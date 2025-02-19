@@ -273,48 +273,56 @@ public class UserContactServiceImpl implements UserContactService {
             //创建会话
             ChatSession chatSession = new ChatSession();
             chatSession.setSessionId(sessionId);
-            chatSession.setLastReceiveTime(curDate.getTime());
             chatSession.setLastMessage(applyInfo);
-            //this.chatSessionMapper.insertOrUpdate(chatSession);
+            chatSession.setLastReceiveTime(curDate.getTime());
+            this.chatSessionMapper.insertOrUpdate(chatSession);
 
-            //申请人session
+            //添加"会话用户"表记录(两条记录)
+            //1.申请人session
             ChatSessionUser applySessionUser = new ChatSessionUser();
             applySessionUser.setUserId(applyUserId);
             applySessionUser.setContactId(contactId);
             applySessionUser.setSessionId(sessionId);
-            applySessionUser.setLastReceiveTime(curDate.getTime());
-            applySessionUser.setLastMessage(applyInfo);
+            //applySessionUser.setLastReceiveTime(curDate.getTime());
+            //applySessionUser.setLastMessage(applyInfo);
             //查询接收人信息
             UserInfo contactUser = this.userInfoMapper.selectByUserId(contactId);
             applySessionUser.setContactName(contactUser.getNickName());
             chatSessionUserList.add(applySessionUser);
 
-            //接受人session
+            //2.接收人session
             ChatSessionUser contactSessionUser = new ChatSessionUser();
             contactSessionUser.setUserId(contactId);
             contactSessionUser.setContactId(applyUserId);
             contactSessionUser.setSessionId(sessionId);
-            contactSessionUser.setLastReceiveTime(curDate.getTime());
-            contactSessionUser.setLastMessage(applyInfo);
+            //contactSessionUser.setLastReceiveTime(curDate.getTime());
+            //contactSessionUser.setLastMessage(applyInfo);
             //查询申请人信息
             UserInfo applyUserInfo = this.userInfoMapper.selectByUserId(applyUserId);
             contactSessionUser.setContactName(applyUserInfo.getNickName());
             chatSessionUserList.add(contactSessionUser);
+
+            //两条记录同时插入"会话用户"表
             this.chatSessionUserMapper.insertOrUpdateBatch(chatSessionUserList);
 
-            //记录消息消息表
+            //记录消息到"聊天消息表"
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setSessionId(sessionId);
-            chatMessage.setMessageType(MessageTypeEnum.ADD_FRIEND.getType());
+            chatMessage.setMessageType(MessageTypeEnum.ADD_FRIEND.getType());//"添加好友打招呼"类型的消息
             chatMessage.setMessageContent(applyInfo);
             chatMessage.setSendUserId(applyUserId);
             chatMessage.setSendUserNickName(applyUserInfo.getNickName());
             chatMessage.setSendTime(curDate.getTime());
             chatMessage.setContactId(contactId);
-            chatMessage.setContactType(UserContactTypeEnum.USER.getType());
+            chatMessage.setContactType(UserContactTypeEnum.USER.getType());//单聊
             chatMessage.setStatus(MessageStatusEnum.SENDED.getStatus());
             chatMessageMapper.insert(chatMessage);
 
+            //以上是对三张数据库表的操作
+
+            //以下是发送消息部分
+
+            //封装messageSendDto
             MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
             /**
              * 发送给接受好友申请的人
@@ -322,10 +330,10 @@ public class UserContactServiceImpl implements UserContactService {
             messageHandler.sendMessage(messageSendDto);
 
             /**
-             * 发送给申请人 发送人就是接收人，联系人就是申请人
+             * 发送给申请人 (发送人就是接收人，联系人就是申请人)
              */
-            messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND_SELF.getType());
-            messageSendDto.setContactId(applyUserId);
+            messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND_SELF.getType());//
+            messageSendDto.setContactId(applyUserId);//发送给申请人
             messageSendDto.setExtendData(contactUser);
             messageHandler.sendMessage(messageSendDto);
 
