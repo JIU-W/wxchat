@@ -82,6 +82,7 @@ public class ChannelContextUtils {
                 // 如果属性已经存在，则获取该属性
                 attributeKey = AttributeKey.valueOf(channel.id().toString());
             }
+            //设置属性为userId(后续会用到)
             channel.attr(attributeKey).set(userId);
 
             //从redis里面获取用户的联系人信息(好友，群组)
@@ -230,8 +231,7 @@ public class ChannelContextUtils {
         String contactId = messageSendDto.getContactId();
         //发送消息
         sendMsg(messageSendDto, contactId);
-        //强制下线
-        if (MessageTypeEnum.FORCE_OFF_LINE.getType().equals(messageSendDto.getMessageType())) {
+        if (MessageTypeEnum.FORCE_OFF_LINE.getType().equals(messageSendDto.getMessageType())) {//强制下线
             //关闭通道
             closeContext(contactId);
         }
@@ -309,16 +309,15 @@ public class ChannelContextUtils {
         if (MessageTypeEnum.ADD_FRIEND_SELF.getType().equals(messageSendDto.getMessageType())) {
             //if里面的特殊情况：添加好友同意后，"打招呼消息"发送给自己。
 
-            //获取"初始的接收人信息"
-            //TODO 也没懂这里的逻辑
 
-            //1.给自己发送ws消息，要把contactId设置为申请人联系人信息找到channel
-            //2.找到之后再通过传进来的"初始接收人信息"(扩展信息)更改一下contactId
+            //1.给自己发送ws消息，要把contactId(接收人)设置为申请人从而找到channel
+            //                          (第一步的操作在UserContactServiceImpl的addContact类里进行了)
+            //2.找到channel之后再通过传进来的"初始接收人信息"(扩展信息)把contactId(接收人)更改回成"原来初始的接收人"
 
-            UserInfo userInfo = (UserInfo) messageSendDto.getExtendData();
-            messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND.getType());
+            UserInfo userInfo = (UserInfo) messageSendDto.getExtendData();//获取"初始的接收人信息"
+            messageSendDto.setMessageType(MessageTypeEnum.ADD_FRIEND.getType());//更改设置消息类型
             messageSendDto.setContactId(userInfo.getUserId());
-            messageSendDto.setContactName(userInfo.getNickName());
+            messageSendDto.setContactName(userInfo.getNickName());//设置昵称
             messageSendDto.setExtendData(null);
         } else {
             //一般的发消息情况都要进行以下的转换
