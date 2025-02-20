@@ -331,12 +331,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (contactNameUpdate == null) {
             return;
         }
+
         //更新token中的昵称
         TokenUserInfoDto tokenUserInfoDto = redisComponet.getTokenUserInfoDtoByUserId(userInfo.getUserId());
         tokenUserInfoDto.setNickName(contactNameUpdate);
         redisComponet.saveTokenUserInfoDto(tokenUserInfoDto);
 
-        //更新ChatSessionUser表冗余的"联系人名称字段"(用户昵称字段)，修改群昵称发送ws消息
+        //更新ChatSessionUser表冗余的"联系人名称字段"(用户昵称字段)，发送ws消息
         chatSessionUserService.updateRedundanceInfo(contactNameUpdate, userInfo.getUserId());
     }
 

@@ -155,10 +155,10 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
         this.chatSessionUserMapper.updateByParam(updateInfo, chatSessionUserQuery);
 
 
-        //修改群昵称后的发送ws消息
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(contactId);
         if (contactTypeEnum == UserContactTypeEnum.GROUP) {
-
+            //修改群昵称后的发送ws消息(这里 netty 底层 实现了广播消息给所有进入了这个群聊的用户)
+            //效果就是这些用户的"这个群组的会话框"的名称会变成修改后的群昵称
             MessageSendDto messageSendDto = new MessageSendDto();
             messageSendDto.setContactType(UserContactTypeEnum.getByPrefix(contactId).getType());
             messageSendDto.setContactId(contactId);
@@ -168,10 +168,13 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
             //发送消息到redis主题
             messageHandler.sendMessage(messageSendDto);
         } else {
+            //好友修改昵称后的发送ws消息，这里的ws消息时发送给"这个修改昵称用户"的"所有的好友"发送
+            //效果是这个修改昵称用户的"所有的好友"的"与这个用户聊天的会话框"的用户名称会变成修改后的昵称
             UserContactQuery userContactQuery = new UserContactQuery();
             userContactQuery.setContactType(UserContactTypeEnum.USER.getType());
             userContactQuery.setContactId(contactId);
             userContactQuery.setStatus(UserContactStatusEnum.FRIEND.getStatus());
+            //查询该用户的所有好友
             List<UserContact> userContactList = userContactMapper.selectList(userContactQuery);
             for (UserContact userContact : userContactList) {
                 MessageSendDto messageSendDto = new MessageSendDto();
@@ -181,6 +184,7 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
                 messageSendDto.setMessageType(MessageTypeEnum.CONTACT_NAME_UPDATE.getType());
                 messageSendDto.setSendUserId(contactId);
                 messageSendDto.setSendUserNickName(contactName);
+                //发送消息到redis主题
                 messageHandler.sendMessage(messageSendDto);
             }
         }

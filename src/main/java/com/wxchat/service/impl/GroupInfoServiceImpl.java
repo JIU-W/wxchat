@@ -281,7 +281,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
                 contactNameUpdate = groupInfo.getGroupName();
             }
 
-            //更新ChatSessionUser表冗余的"联系人名称字段"(群组昵称字段)，修改群昵称发送ws消息
+            //更新ChatSessionUser表冗余的"联系人名称字段"(群组昵称字段)，发送ws消息
             chatSessionUserService.updateRedundanceInfo(contactNameUpdate, groupInfo.getGroupId());
         }
         if (null == avatarFile) {
