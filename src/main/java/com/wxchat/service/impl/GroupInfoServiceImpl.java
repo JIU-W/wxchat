@@ -10,14 +10,15 @@ import com.wxchat.entity.po.*;
 import com.wxchat.entity.query.*;
 import com.wxchat.entity.vo.PaginationResultVO;
 import com.wxchat.exception.BusinessException;
-import com.wxchat.mappers.GroupInfoMapper;
-import com.wxchat.mappers.UserContactMapper;
-import com.wxchat.mappers.UserInfoMapper;
+import com.wxchat.mappers.*;
 import com.wxchat.redis.RedisComponet;
+import com.wxchat.service.ChatSessionUserService;
 import com.wxchat.service.GroupInfoService;
 import com.wxchat.service.UserContactService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
+import com.wxchat.websocket.ChannelContextUtils;
+import com.wxchat.websocket.MessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -52,7 +53,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
     @Resource
     private UserContactMapper<UserContact, UserContactQuery> userContactMapper;
 
-    /*@Resource
+    @Resource
     private ChatSessionUserService chatSessionUserService;
 
     @Resource
@@ -66,7 +67,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
 
     @Resource
     private ChatMessageMapper<ChatMessage, ChatMessageQuery> chatMessageMapper;
-*/
+
     @Resource
     private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
 
@@ -210,13 +211,15 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             userContact.setLastUpdateTime(curDate);
             this.userContactMapper.insert(userContact);
 
-            //TODO 创建会话
-            /*String sessionId = StringTools.getChatSessionId4Group(groupInfo.getGroupId());
+            /**
+             * 创建会话
+             */
+            String sessionId = StringTools.getChatSessionId4Group(groupInfo.getGroupId());//生成群组会话id
             ChatSession chatSession = new ChatSession();
             chatSession.setSessionId(sessionId);
             chatSession.setLastMessage(MessageTypeEnum.GROUP_CREATE.getInitMessage());
             chatSession.setLastReceiveTime(curDate.getTime());
-            //this.chatSessionMapper.insert(chatSession);
+            this.chatSessionMapper.insert(chatSession);
 
             //创建群主会话
             ChatSessionUser chatSessionUser = new ChatSessionUser();
@@ -224,15 +227,9 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             chatSessionUser.setContactId(groupInfo.getGroupId());
             chatSessionUser.setContactName(groupInfo.getGroupName());
             chatSessionUser.setSessionId(sessionId);
-            //this.chatSessionUserService.add(chatSessionUser);
+            this.chatSessionUserService.add(chatSessionUser);
 
-            //添加为联系人
-            redisComponet.addUserContact(groupInfo.getGroupOwnerId(), groupInfo.getGroupId());
-
-
-            //channelContextUtils.addUser2Group(groupInfo.getGroupOwnerId(), groupInfo.getGroupId());
-
-            //TODO 创建消息
+            //创建消息
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setSessionId(sessionId);
             chatMessage.setMessageType(MessageTypeEnum.GROUP_CREATE.getType());
@@ -240,19 +237,36 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             chatMessage.setSendUserId(null);
             chatMessage.setSendUserNickName(null);
             chatMessage.setSendTime(curDate.getTime());
-            chatMessage.setContactId(groupInfo.getGroupId());
+            chatMessage.setContactId(groupInfo.getGroupId());//"接收联系人id"设置为"群组id"
             chatMessage.setContactType(UserContactTypeEnum.GROUP.getType());
             chatMessage.setStatus(MessageStatusEnum.SENDED.getStatus());
-            //chatMessageMapper.insert(chatMessage);
-            //发送WS消息
+            chatMessageMapper.insert(chatMessage);
+
+            //以上是对三张数据库表的操作
+
+
+            //将"群组"添加为"群主"的联系人(redis缓存)
+            redisComponet.addUserContact(groupInfo.getGroupOwnerId(), groupInfo.getGroupId());
+
+            //把"用户通道"加入到"群组通道"中，使其成为群组成员
+            channelContextUtils.addUser2Group(groupInfo.getGroupOwnerId(), groupInfo.getGroupId());
+
+
+            /**
+             * 发送WS消息
+             */
             chatSessionUser.setLastMessage(MessageTypeEnum.GROUP_CREATE.getInitMessage());
             chatSessionUser.setLastReceiveTime(curDate.getTime());
             chatSessionUser.setMemberCount(1);
 
+            //封装MessageSendDto数据
             MessageSendDto messageSend = CopyTools.copy(chatMessage, MessageSendDto.class);
+            //设置扩展数据为"chatSessionUser(会话信息，会话用户信息)"
             messageSend.setExtendData(chatSessionUser);
             messageSend.setLastMessage(chatSessionUser.getLastMessage());
-            //messageHandler.sendMessage(messageSend);*/
+
+            //发送消息到Redis主题
+            messageHandler.sendMessage(messageSend);
 
         } else {//修改
             GroupInfo dbInfo = this.groupInfoMapper.selectByGroupId(groupInfo.getGroupId());
@@ -264,12 +278,12 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             //TODO 更新相关表冗余的字段
             //TODO 修改群昵称发送ws消息
 
-            /*String contactNameUpdate = null;
+            String contactNameUpdate = null;
             if (!dbInfo.getGroupName().equals(groupInfo.getGroupName())) {
                 contactNameUpdate = groupInfo.getGroupName();
             }
-            //chatSessionUserService.updateRedundanceInfo(contactNameUpdate, groupInfo.getGroupId());
-*/
+            chatSessionUserService.updateRedundanceInfo(contactNameUpdate, groupInfo.getGroupId());
+
         }
         if (null == avatarFile) {
             return;

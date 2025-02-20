@@ -333,23 +333,35 @@ public class ChannelContextUtils {
         userChannel.writeAndFlush(new TextWebSocketFrame(JsonUtils.convertObj2Json(messageSendDto)));
     }
 
-    //添加到群聊
+
+    /**
+     * 添加到群聊  (将传入的用户通道(context)添加到指定的群组通道中去)
+     *                      (后续可以通过群组通道对所有成员进行操作 (例如广播消息))
+     */
     private void add2Group(String groupId, Channel context) {
+        //获取"群组通道"ChannelGroup
         ChannelGroup group = GROUP_CONTEXT_MAP.get(groupId);
         //如果群聊不存在，则创建一个
         if (group == null) {
+            //创建一个"群组通道"
             group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+            //将新创建的"群组通道"根据"群组ID"映射存入到map集合中
             GROUP_CONTEXT_MAP.put(groupId, group);
         }
         if (context == null) {
             return;
         }
-        //添加到群聊
+        //添加到群聊(将传入的"用户通道"添加到"群组通道"中去，使其成为群组成员)
         group.add(context);
     }
 
+    /**
+     * 把用户加入到群组通道中
+     */
     public void addUser2Group(String userId, String groupId) {
+        //获取该用户的通道channel
         Channel channel = USER_CONTEXT_MAP.get(userId);
+        //把用户通道加入到对应的群组通道里面
         add2Group(groupId, channel);
     }
 

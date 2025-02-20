@@ -5,6 +5,12 @@ import com.wxchat.utils.StringTools;
 
 import java.io.Serializable;
 
+/**
+ * @description 发送ws消息用到的Dto
+ * @author JIU-W
+ * @date 2025-02-20
+ * @version 1.0
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MessageSendDto<T> implements Serializable {
 
