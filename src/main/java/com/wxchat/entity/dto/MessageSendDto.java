@@ -60,7 +60,7 @@ public class MessageSendDto<T> implements Serializable {
     private String fileName;
     private Integer fileType;
 
-    //群员
+    //群成员数量
     private Integer memberCount;
 
     public Integer getStatus() {
