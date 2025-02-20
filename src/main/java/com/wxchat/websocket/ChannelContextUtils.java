@@ -269,8 +269,11 @@ public class ChannelContextUtils {
         if (group == null) {
             return;
         }
-        //群聊发送消息
+        //发送消息到群组
+        //将消息封装为 TextWebSocketFrame(表示WebSocket文本帧)，并调用writeAndFlush方法"广播"到群组中的所有用户通道。
         group.writeAndFlush(new TextWebSocketFrame(JSON.toJSONString(messageSendDto)));
+
+        //以下是特殊情况
 
         //移除群聊
         MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByType(messageSendDto.getMessageType());

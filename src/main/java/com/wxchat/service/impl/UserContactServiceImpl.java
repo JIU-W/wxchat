@@ -342,7 +342,12 @@ public class UserContactServiceImpl implements UserContactService {
             messageHandler.sendMessage(messageSendDto);
 
         } else {//群聊
-            //加入群组
+
+            /**
+            * 加入群组
+             */
+
+            //创建"会话用户"
             ChatSessionUser chatSessionUser = new ChatSessionUser();
             chatSessionUser.setUserId(applyUserId);
             chatSessionUser.setContactId(contactId);
@@ -351,17 +356,13 @@ public class UserContactServiceImpl implements UserContactService {
             chatSessionUser.setSessionId(sessionId);
             this.chatSessionUserMapper.insertOrUpdate(chatSessionUser);
 
-            //将群组加入到用户的联系人列表
-            redisComponet.addUserContact(applyUserId, groupInfo.getGroupId());
-
-            channelContextUtils.addUser2Group(applyUserId, groupInfo.getGroupId());
-
 
             UserInfo applyUserInfo = this.userInfoMapper.selectByUserId(applyUserId);
+            //组装消息
+            String sendMessage = String.format(MessageTypeEnum.ADD_GROUP.getInitMessage(),
+                    applyUserInfo.getNickName());
 
-            String sendMessage = String.format(MessageTypeEnum.ADD_GROUP.getInitMessage(), applyUserInfo.getNickName());
-
-            //增加session信息
+            //创建会话信息(增加session信息)
             ChatSession chatSession = new ChatSession();
             chatSession.setSessionId(sessionId);
             chatSession.setLastReceiveTime(curDate.getTime());
@@ -381,16 +382,26 @@ public class UserContactServiceImpl implements UserContactService {
             chatMessage.setStatus(MessageStatusEnum.SENDED.getStatus());
             chatMessageMapper.insert(chatMessage);
 
+
+            //将群组加入到用户的联系人列表(前面有了)
+            //redisComponet.addUserContact(applyUserId, groupInfo.getGroupId());
+
+            //把"用户通道"加入到"群组通道"中，使其成为群组成员
+            channelContextUtils.addUser2Group(applyUserId, groupInfo.getGroupId());
+
+
             //发送群消息
+            //封装MessageSendDto数据
             MessageSendDto messageSend = CopyTools.copy(chatMessage, MessageSendDto.class);
             messageSend.setContactId(groupInfo.getGroupId());
-            //获取群人数量
+            //获取群成员数量
             UserContactQuery userContactQuery = new UserContactQuery();
             userContactQuery.setContactId(contactId);
             userContactQuery.setStatus(UserContactStatusEnum.FRIEND.getStatus());
             Integer memberCount = this.userContactMapper.selectCount(userContactQuery);
             messageSend.setMemberCount(memberCount);
             messageSend.setContactName(groupInfo.getGroupName());
+            //发送群消息到redis主题
             messageHandler.sendMessage(messageSend);
         }
 
