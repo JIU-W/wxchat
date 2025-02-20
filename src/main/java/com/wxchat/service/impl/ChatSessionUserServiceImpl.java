@@ -142,7 +142,7 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
 
 
     public void updateRedundanceInfo(String contactName, String contactId) {
-        //contactName为空时，说明前端没有更新群组昵称，直接返回
+        //contactName为空时，说明没有更新群组昵称，直接返回
         if (StringTools.isEmpty(contactName)) {
             return;
         }
@@ -154,6 +154,8 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
         //更新"会话用户表"的冗余"群组昵称"字段
         this.chatSessionUserMapper.updateByParam(updateInfo, chatSessionUserQuery);
 
+
+        //修改群昵称后的发送ws消息
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(contactId);
         if (contactTypeEnum == UserContactTypeEnum.GROUP) {
 
@@ -162,6 +164,7 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
             messageSendDto.setContactId(contactId);
             messageSendDto.setExtendData(contactName);
             messageSendDto.setMessageType(MessageTypeEnum.CONTACT_NAME_UPDATE.getType());
+
             //发送消息到redis主题
             messageHandler.sendMessage(messageSendDto);
         } else {

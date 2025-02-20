@@ -54,7 +54,7 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
     /**
      * 当通道不再活跃时（连接关闭）会调用此方法，我们可以在这里做一些清理工作
-     * (用户退出登录的时候就会自动调用这个方法)
+     *                      (用户退出登录的时候就会自动调用这个方法)
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
@@ -65,7 +65,7 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
     /**
      * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。
-     * (用于接收心跳)
+     *                      (用于接收心跳)
      *
      * @param ctx
      * @param textWebSocketFrame

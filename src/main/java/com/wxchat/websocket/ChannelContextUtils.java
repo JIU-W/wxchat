@@ -68,6 +68,11 @@ public class ChannelContextUtils {
 
     /**
      * 用户加入通道 (用户登录上线)
+     *              因为用户在之前的"退出登录即关闭客户端时"会将自己的用户通道 channel关闭，
+     *              且"自己的用户通道"会"自动退出"自己所有的"群组通道"，所以再次登录上线的时候又要重新加入群组通道，
+     *              当然也会重新去将自己的用户通道加入到map集合中去。由于在离线的时间内用户的通道 channel处于关闭状态，
+     *              所以在这段时间内用户接收不了消息(单聊和群聊消息都接收不到)，
+     *              所以在用户登录上线的时候就要把上次下线后的"离线消息"发送给用户(时间在三天之内的消息)。
      * @param userId
      * @param channel
      */
@@ -90,7 +95,7 @@ public class ChannelContextUtils {
             //遍历群组，添加到群组通道
             for (String groupId : contactList) {
                 if (groupId.startsWith(UserContactTypeEnum.GROUP.getPrefix())) {
-                    //添加到群组通道
+                    //添加到群组通道(将传入的"用户通道"添加到"群组通道"中去)
                     add2Group(groupId, channel);
                 }
             }
@@ -195,7 +200,7 @@ public class ChannelContextUtils {
         //获取属性的值:userId
         String userId = attribute.get();
         if (!StringTools.isEmpty(userId)) {
-            //从用户通道中删除
+            //把用户通道从map集合中删除
             USER_CONTEXT_MAP.remove(userId);
         }
         //删除redis里面用户心跳
@@ -305,6 +310,9 @@ public class ChannelContextUtils {
         }
         Channel userChannel = USER_CONTEXT_MAP.get(reciveId);
         if (userChannel == null) {
+            //当用户退出登录后，用户通道channel会被map集合删去，也就会直接return返回，
+            //导致不会发送消息(这类消息也就是"离线消息")，当然就算map集合里的channel没有被删去，也还是不能发消息的，
+            //因为用户通道在退出客户端的时候就已经被关闭了。
             return;
         }
 
