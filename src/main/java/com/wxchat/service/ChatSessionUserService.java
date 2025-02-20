@@ -69,5 +69,11 @@ public interface ChatSessionUserService {
      */
     Integer deleteChatSessionUserByUserIdAndContactId(String userId, String contactId);
 
+    /**
+     * 更新相关表(ChatSessionUser表)冗余的字段，修改群昵称发送ws消息
+     * @param contactName
+     * @param contactId
+     */
     void updateRedundanceInfo(String contactName, String contactId);
+
 }

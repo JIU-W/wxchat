@@ -139,7 +139,7 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
         return this.chatSessionUserMapper.deleteByUserIdAndContactId(userId, contactId);
     }
 
-    @Override
+
     public void updateRedundanceInfo(String contactName, String contactId) {
         if (StringTools.isEmpty(contactName)) {
             return;
@@ -178,4 +178,6 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
             }
         }
     }
+
+
 }

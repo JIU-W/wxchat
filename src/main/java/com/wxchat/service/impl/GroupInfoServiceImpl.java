@@ -275,13 +275,12 @@ public class GroupInfoServiceImpl implements GroupInfoService {
             }
             this.groupInfoMapper.updateByGroupId(groupInfo, groupInfo.getGroupId());
 
-            //TODO 更新相关表冗余的字段
-            //TODO 修改群昵称发送ws消息
 
             String contactNameUpdate = null;
             if (!dbInfo.getGroupName().equals(groupInfo.getGroupName())) {
                 contactNameUpdate = groupInfo.getGroupName();
             }
+            //更新相关表(ChatSessionUser表)冗余的字段，修改群昵称发送ws消息
             chatSessionUserService.updateRedundanceInfo(contactNameUpdate, groupInfo.getGroupId());
 
         }
