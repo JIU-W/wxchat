@@ -15,6 +15,7 @@ import com.wxchat.mappers.ChatSessionUserMapper;
 import com.wxchat.mappers.UserContactMapper;
 import com.wxchat.service.ChatSessionUserService;
 import com.wxchat.utils.StringTools;
+import com.wxchat.websocket.MessageHandler;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,8 +31,8 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
     @Resource
     private ChatSessionUserMapper<ChatSessionUser, ChatSessionUserQuery> chatSessionUserMapper;
 
-    //@Resource
-    //private MessageHandler messageHandler;
+    @Resource
+    private MessageHandler messageHandler;
 
     @Resource
     private UserContactMapper<UserContact, UserContactQuery> userContactMapper;
@@ -141,25 +142,28 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
 
 
     public void updateRedundanceInfo(String contactName, String contactId) {
+        //contactName为空时，说明前端没有更新群组昵称，直接返回
         if (StringTools.isEmpty(contactName)) {
             return;
         }
+
         ChatSessionUser updateInfo = new ChatSessionUser();
         updateInfo.setContactName(contactName);
-
         ChatSessionUserQuery chatSessionUserQuery = new ChatSessionUserQuery();
         chatSessionUserQuery.setContactId(contactId);
+        //更新"会话用户表"的冗余"群组昵称"字段
         this.chatSessionUserMapper.updateByParam(updateInfo, chatSessionUserQuery);
 
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(contactId);
-
         if (contactTypeEnum == UserContactTypeEnum.GROUP) {
+
             MessageSendDto messageSendDto = new MessageSendDto();
             messageSendDto.setContactType(UserContactTypeEnum.getByPrefix(contactId).getType());
             messageSendDto.setContactId(contactId);
             messageSendDto.setExtendData(contactName);
             messageSendDto.setMessageType(MessageTypeEnum.CONTACT_NAME_UPDATE.getType());
-            //messageHandler.sendMessage(messageSendDto);
+            //发送消息到redis主题
+            messageHandler.sendMessage(messageSendDto);
         } else {
             UserContactQuery userContactQuery = new UserContactQuery();
             userContactQuery.setContactType(UserContactTypeEnum.USER.getType());
@@ -174,7 +178,7 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
                 messageSendDto.setMessageType(MessageTypeEnum.CONTACT_NAME_UPDATE.getType());
                 messageSendDto.setSendUserId(contactId);
                 messageSendDto.setSendUserNickName(contactName);
-                //messageHandler.sendMessage(messageSendDto);
+                messageHandler.sendMessage(messageSendDto);
             }
         }
     }
