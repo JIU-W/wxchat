@@ -300,7 +300,7 @@ public class ChannelContextUtils {
     }
 
     /**
-     * 发送消息到用户(单聊)
+     * 发送消息到用户(单聊、。。等等)
      * @param messageSendDto
      * @param reciveId
      */
