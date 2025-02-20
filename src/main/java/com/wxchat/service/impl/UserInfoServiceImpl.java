@@ -18,10 +18,12 @@ import com.wxchat.mappers.UserContactMapper;
 import com.wxchat.mappers.UserInfoBeautyMapper;
 import com.wxchat.mappers.UserInfoMapper;
 import com.wxchat.redis.RedisComponet;
+import com.wxchat.service.ChatSessionUserService;
 import com.wxchat.service.UserContactService;
 import com.wxchat.service.UserInfoService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
+import com.wxchat.websocket.MessageHandler;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,11 +59,11 @@ public class UserInfoServiceImpl implements UserInfoService {
     private RedisComponet redisComponet;
 
 
-    //@Resource
-    //private ChatSessionUserService chatSessionUserService;
+    @Resource
+    private ChatSessionUserService chatSessionUserService;
 
-    //@Resource
-    //private MessageHandler messageHandler;
+    @Resource
+    private MessageHandler messageHandler;
 
     @Resource
     private UserContactService userContactService;
@@ -329,13 +331,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (contactNameUpdate == null) {
             return;
         }
-        //TODO
         //更新token中的昵称
-        //TokenUserInfoDto tokenUserInfoDto = redisComponet.getTokenUserInfoDtoByUserId(userInfo.getUserId());
-        //tokenUserInfoDto.setNickName(contactNameUpdate);
-        //redisComponet.saveTokenUserInfoDto(tokenUserInfoDto);
+        TokenUserInfoDto tokenUserInfoDto = redisComponet.getTokenUserInfoDtoByUserId(userInfo.getUserId());
+        tokenUserInfoDto.setNickName(contactNameUpdate);
+        redisComponet.saveTokenUserInfoDto(tokenUserInfoDto);
 
-        //chatSessionUserService.updateRedundanceInfo(contactNameUpdate, userInfo.getUserId());
+        //更新ChatSessionUser表冗余的"联系人名称字段"(用户昵称字段)，修改群昵称发送ws消息
+        chatSessionUserService.updateRedundanceInfo(contactNameUpdate, userInfo.getUserId());
     }
 
 

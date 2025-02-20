@@ -151,7 +151,7 @@ public class ChatSessionUserServiceImpl implements ChatSessionUserService {
         updateInfo.setContactName(contactName);
         ChatSessionUserQuery chatSessionUserQuery = new ChatSessionUserQuery();
         chatSessionUserQuery.setContactId(contactId);
-        //更新"会话用户表"的冗余"群组昵称"字段
+        //更新"会话用户表"的冗余"联系人名称"字段
         this.chatSessionUserMapper.updateByParam(updateInfo, chatSessionUserQuery);
 
 

@@ -311,8 +311,8 @@ public class ChannelContextUtils {
         Channel userChannel = USER_CONTEXT_MAP.get(reciveId);
         if (userChannel == null) {
             //当用户退出登录后，用户通道channel会被map集合删去，也就会直接return返回，
-            //导致不会发送消息(这类消息也就是"离线消息")，当然就算map集合里的channel没有被删去，也还是不能发消息的，
-            //因为用户通道在退出客户端的时候就已经被关闭了。
+            //导致不会发送消息(这类消息也就是"离线消息")。当然就算map集合里的channel没有被删去，也还是不能发消息的，
+            //因为用户通道channel在退出客户端的时候就已经被关闭了。
             return;
         }
 
