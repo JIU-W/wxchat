@@ -383,9 +383,6 @@ public class UserContactServiceImpl implements UserContactService {
             chatMessageMapper.insert(chatMessage);
 
 
-            //将群组加入到用户的联系人列表(前面有了)
-            //redisComponet.addUserContact(applyUserId, groupInfo.getGroupId());
-
             //把"用户通道"加入到"群组通道"中，使其成为群组成员
             channelContextUtils.addUser2Group(applyUserId, groupInfo.getGroupId());
 
