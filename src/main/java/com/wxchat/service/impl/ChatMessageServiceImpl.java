@@ -278,11 +278,11 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             //其它文件过大
             return;
         }
-        //获取文件名
+        //文件原始名
         String fileName = file.getOriginalFilename();
-        //文件名后缀
+        //文件后缀名
         String fileExtName = StringTools.getFileSuffix(fileName);
-        //
+        //文件名进行重新命名：消息id + 文件后缀
         String fileRealName = messageId + fileExtName;
         String month = DateUtil.format(new Date(message.getSendTime()), DateTimePatternEnum.YYYYMM.getPattern());
         File folder = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE + month);
