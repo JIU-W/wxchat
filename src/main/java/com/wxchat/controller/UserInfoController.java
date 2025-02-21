@@ -62,6 +62,7 @@ public class UserInfoController extends ABaseController {
         userInfo.setLastLoginTime(null);
         //更新用户信息
         this.userInfoService.updateUserInfo(userInfo, avatarFile, avatarCover);
+        //TODO
         /*if (!tokenUserInfoDto.getNickName().equals(userInfo.getNickName())) {
             tokenUserInfoDto.setNickName(userInfo.getNickName());
             resetTokenUserInfo(request, tokenUserInfoDto);
