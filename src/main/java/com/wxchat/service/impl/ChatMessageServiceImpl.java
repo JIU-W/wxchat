@@ -167,8 +167,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
 
     public MessageSendDto saveMessage(ChatMessage chatMessage, TokenUserInfoDto tokenUserInfoDto) {
-        //不是机器人回复(因为机器人回复我们的时候也会调这个方法，所以)，判断好友状态
-        if (!Constants.ROBOT_UID.equals(tokenUserInfoDto.getUserId())) {//TODO 这里不是tokenUserInfoDto.getUserId()
+        //不是"机器人回复用户的消息"的话，都要进行判断。(因为机器人回复我们的时候也会调这个方法)
+        if (!Constants.ROBOT_UID.equals(tokenUserInfoDto.getUserId())) {
             //获取用户联系人(好友，加入的群组，机器人)列表
             List<String> contactList = redisComponet.getUserContactList(tokenUserInfoDto.getUserId());
             if (!contactList.contains(chatMessage.getContactId())) {
@@ -231,7 +231,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         //发送消息
         MessageSendDto messageSend = CopyTools.copy(chatMessage, MessageSendDto.class);
 
-        if (Constants.ROBOT_UID.equals(contactId)) {//和机器人聊天
+        if (Constants.ROBOT_UID.equals(contactId)) {//发消息给机器人
             SysSettingDto sysSettingDto = redisComponet.getSysSetting();
             TokenUserInfoDto robot = new TokenUserInfoDto();
             robot.setUserId(sysSettingDto.getRobotUid());
