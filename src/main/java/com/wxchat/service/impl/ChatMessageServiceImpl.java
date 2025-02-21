@@ -165,7 +165,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
 
-    @Override
     public MessageSendDto saveMessage(ChatMessage chatMessage, TokenUserInfoDto tokenUserInfoDto) {
         //不是机器人回复，判断好友状态
         if (!Constants.ROBOT_UID.equals(tokenUserInfoDto.getUserId())) {

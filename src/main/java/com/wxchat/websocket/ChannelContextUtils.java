@@ -300,7 +300,7 @@ public class ChannelContextUtils {
     }
 
     /**
-     * 发送消息到用户(单聊、。。等等)
+     * 发送消息到用户(单聊、同意加好友申请时发给"申请人"和"接收人"的打招呼消息、。。等等)
      * @param messageSendDto
      * @param reciveId
      */

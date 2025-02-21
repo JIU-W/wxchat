@@ -73,6 +73,9 @@ public interface ChatMessageService {
      */
     Integer deleteChatMessageByMessageId(Long messageId);
 
+    /**
+     * 保存消息
+     */
     MessageSendDto saveMessage(ChatMessage chatMessage, TokenUserInfoDto tokenUserInfoDto);
 
     void saveMessageFile(String userId, Long messageId, MultipartFile file, MultipartFile cover);
