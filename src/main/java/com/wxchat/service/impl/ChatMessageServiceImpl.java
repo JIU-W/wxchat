@@ -278,6 +278,9 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             //其它文件过大
             return;
         }
+
+
+
         //文件原始名
         String fileName = file.getOriginalFilename();
         //文件后缀名
