@@ -53,7 +53,7 @@ public class ChatController extends ABaseController {
     private AppConfig appConfig;
 
     /**
-     * 发送消息
+     * 发送消息：(和好友发消息，在群组发消息)
      */
     @RequestMapping("/sendMessage")
     @GlobalInterceptor

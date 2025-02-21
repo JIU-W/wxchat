@@ -331,7 +331,7 @@ public class ChannelContextUtils {
             messageSendDto.setContactName(userInfo.getNickName());//设置昵称
             messageSendDto.setExtendData(null);
         } else {
-            //一般的发消息情况都要进行以下的转换
+            //大部分的发单聊消息情况都要进行以下的转换
 
             //TODO 没懂这里的逻辑
             //比如 B 发消息(MessageSendDto类)给 A 的时候，

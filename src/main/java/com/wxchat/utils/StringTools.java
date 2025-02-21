@@ -113,7 +113,7 @@ public class StringTools {
         return encodeByMD5(StringUtils.join(userIds, ""));
     }
 
-    //清除html标签
+    //清除html标签：防止消息注入
     public static String cleanHtmlTag(String content) {
         if (isEmpty(content)) {
             return content;
@@ -124,6 +124,11 @@ public class StringTools {
         return content;
     }
 
+    /**
+     *
+     * @param content
+     * @return
+     */
     public static String resetMessageContent(String content) {
         content = cleanHtmlTag(content);
         return content;

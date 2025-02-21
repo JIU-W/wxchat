@@ -168,7 +168,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     public MessageSendDto saveMessage(ChatMessage chatMessage, TokenUserInfoDto tokenUserInfoDto) {
         //不是机器人回复，判断好友状态
-        if (!Constants.ROBOT_UID.equals(tokenUserInfoDto.getUserId())) {//TODO 为什么是 tokenUserInfoDto.getUserId()
+        if (!Constants.ROBOT_UID.equals(tokenUserInfoDto.getUserId())) {//TODO 这里不是tokenUserInfoDto.getUserId()
             //获取用户联系人(好友，加入的群组，机器人)列表
             List<String> contactList = redisComponet.getUserContactList(tokenUserInfoDto.getUserId());
             if (!contactList.contains(chatMessage.getContactId())) {
@@ -182,39 +182,43 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 }
             }
         }
-        //
         String sessionId = null;
         String sendUserId = tokenUserInfoDto.getUserId();
         String contactId = chatMessage.getContactId();
-        Long curTime = System.currentTimeMillis();
+        Long curTime = System.currentTimeMillis();//获取当前时间的时间戳(毫秒)
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(contactId);
         MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByType(chatMessage.getMessageType());
         String lastMessage = chatMessage.getMessageContent();
+        //消把息内容进行过滤(清除html标签：防止消息注入)
         String messageContent = StringTools.resetMessageContent(chatMessage.getMessageContent());
         chatMessage.setMessageContent(messageContent);
-        Integer status = MessageTypeEnum.MEDIA_CHAT == messageTypeEnum ? MessageStatusEnum.SENDING.getStatus() : MessageStatusEnum.SENDED.getStatus();
+        //设置消息状态
+        Integer status = MessageTypeEnum.MEDIA_CHAT == messageTypeEnum ?
+                MessageStatusEnum.SENDING.getStatus() : MessageStatusEnum.SENDED.getStatus();
         if (ArraysUtil.contains(new Integer[]{
-                MessageTypeEnum.CHAT.getType(),
-                MessageTypeEnum.GROUP_CREATE.getType(),
-                MessageTypeEnum.ADD_FRIEND.getType(),
-                MessageTypeEnum.MEDIA_CHAT.getType()
+                MessageTypeEnum.CHAT.getType(), MessageTypeEnum.GROUP_CREATE.getType(),
+                MessageTypeEnum.ADD_FRIEND.getType(), MessageTypeEnum.MEDIA_CHAT.getType()
         }, messageTypeEnum.getType())) {
             if (UserContactTypeEnum.USER == contactTypeEnum) {
                 sessionId = StringTools.getChatSessionId4User(new String[]{sendUserId, contactId});
             } else {
                 sessionId = StringTools.getChatSessionId4Group(contactId);
             }
-            //更新会话消息
+
+            //更新会话消息(ChatSession)
             ChatSession chatSession = new ChatSession();
             chatSession.setLastMessage(messageContent);
-            if (UserContactTypeEnum.GROUP == contactTypeEnum && !MessageTypeEnum.GROUP_CREATE.getType().equals(messageTypeEnum.getType())) {
+            //如果是在群组里发消息，则发消息的时候要带上用户自己的"群昵称"
+            if (UserContactTypeEnum.GROUP == contactTypeEnum &&
+                    !MessageTypeEnum.GROUP_CREATE.getType().equals(messageTypeEnum.getType())) {
                 chatSession.setLastMessage(tokenUserInfoDto.getNickName() + "：" + messageContent);
             }
             lastMessage = chatSession.getLastMessage();
             //如果是媒体文件
             chatSession.setLastReceiveTime(curTime);
             chatSessionMapper.updateBySessionId(chatSession, sessionId);
-            //记录消息消息表
+
+            //记录消息消息表(ChatMessage)
             chatMessage.setSessionId(sessionId);
             chatMessage.setSendUserId(sendUserId);
             chatMessage.setSendUserNickName(tokenUserInfoDto.getNickName());
@@ -223,6 +227,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             chatMessage.setStatus(status);
             chatMessageMapper.insert(chatMessage);
         }
+
         MessageSendDto messageSend = CopyTools.copy(chatMessage, MessageSendDto.class);
         if (Constants.ROBOT_UID.equals(contactId)) {
             SysSettingDto sysSettingDto = redisComponet.getSysSetting();
