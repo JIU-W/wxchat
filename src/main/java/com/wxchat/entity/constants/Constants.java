@@ -33,10 +33,13 @@ public class Constants {
 
     public static final String COVER_IMAGE_SUFFIX = "_cover.png";
 
+    //图片格式
     public static final String[] IMAGE_SUFFIX_LIST = new String[]{".jpeg", ".jpg", ".png", ".gif", ".bmp", ".webp"};
 
+    //视频格式
     public static final String[] VIDEO_SUFFIX_LIST = new String[]{".mp4", ".avi", ".rmvb", ".mkv", ".mov"};
 
+    //1MB等于 (1024*1024)(Byte)(字节)        (1 MB = 1024×1024 B)
     public static final Long FILE_SIZE_MB = 1024 * 1024L;
 
     /**

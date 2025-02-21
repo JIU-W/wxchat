@@ -251,7 +251,6 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         return messageSend;
     }
 
-    @Override
     public void saveMessageFile(String userId, Long messageId, MultipartFile file, MultipartFile cover) {
         ChatMessage message = chatMessageMapper.selectByMessageId(messageId);
         if (null == message) {
@@ -260,23 +259,30 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         if (!message.getSendUserId().equals(userId)) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
-
+        //获取系统设置
         SysSettingDto sysSettingDto = redisComponet.getSysSetting();
+        //获取文件后缀
         String fileSuffix = StringTools.getFileSuffix(file.getOriginalFilename());
         if (!StringTools.isEmpty(fileSuffix) && ArraysUtil.contains(Constants.IMAGE_SUFFIX_LIST, fileSuffix.toLowerCase())
                 && file.getSize() > Constants.FILE_SIZE_MB * sysSettingDto.getMaxImageSize()) {
+            //图片过大
             return;
         } else if (!StringTools.isEmpty(fileSuffix) && ArraysUtil.contains(Constants.VIDEO_SUFFIX_LIST, fileSuffix.toLowerCase())
                 && file.getSize() > Constants.FILE_SIZE_MB * sysSettingDto.getMaxVideoSize()) {
+            //视频过大
             return;
         } else if (!StringTools.isEmpty(fileSuffix) &&
                 !ArraysUtil.contains(Constants.VIDEO_SUFFIX_LIST, fileSuffix.toLowerCase()) &&
                 !ArraysUtil.contains(Constants.IMAGE_SUFFIX_LIST, fileSuffix.toLowerCase()) &&
                 file.getSize() > Constants.FILE_SIZE_MB * sysSettingDto.getMaxFileSize()) {
+            //其它文件过大
             return;
         }
+        //获取文件名
         String fileName = file.getOriginalFilename();
+        //文件名后缀
         String fileExtName = StringTools.getFileSuffix(fileName);
+        //
         String fileRealName = messageId + fileExtName;
         String month = DateUtil.format(new Date(message.getSendTime()), DateTimePatternEnum.YYYYMM.getPattern());
         File folder = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE + month);
@@ -305,7 +311,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         messageSend.setMessageId(message.getMessageId());
         messageSend.setMessageType(MessageTypeEnum.FILE_UPLOAD.getType());
         messageSend.setContactId(message.getContactId());
-        //messageHandler.sendMessage(messageSend);
+        messageHandler.sendMessage(messageSend);
     }
 
     @Override
@@ -346,4 +352,5 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         }
         return file;
     }
+
 }

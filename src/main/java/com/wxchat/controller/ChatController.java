@@ -89,6 +89,7 @@ public class ChatController extends ABaseController {
     public ResponseVO uploadFile(HttpServletRequest request, @NotNull Long messageId,
                                  @NotNull MultipartFile file, @NotNull MultipartFile cover) {
         TokenUserInfoDto userInfoDto = getTokenUserInfo(request);
+        //保存"消息文件"
         chatMessageService.saveMessageFile(userInfoDto.getUserId(), messageId, file, cover);
         return getSuccessResponseVO(null);
     }
