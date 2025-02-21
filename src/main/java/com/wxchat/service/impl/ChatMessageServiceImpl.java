@@ -167,7 +167,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
 
     public MessageSendDto saveMessage(ChatMessage chatMessage, TokenUserInfoDto tokenUserInfoDto) {
-        //不是机器人回复，判断好友状态
+        //不是机器人回复(因为机器人回复我们的时候也会调这个方法，所以)，判断好友状态
         if (!Constants.ROBOT_UID.equals(tokenUserInfoDto.getUserId())) {//TODO 这里不是tokenUserInfoDto.getUserId()
             //获取用户联系人(好友，加入的群组，机器人)列表
             List<String> contactList = redisComponet.getUserContactList(tokenUserInfoDto.getUserId());
@@ -189,13 +189,13 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(contactId);
         MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByType(chatMessage.getMessageType());
         String lastMessage = chatMessage.getMessageContent();
-        //消把息内容进行过滤(清除html标签：防止消息注入)
+        //把消息内容进行过滤(清除html标签：防止消息注入)
         String messageContent = StringTools.resetMessageContent(chatMessage.getMessageContent());
         chatMessage.setMessageContent(messageContent);
         //设置消息状态
         Integer status = MessageTypeEnum.MEDIA_CHAT == messageTypeEnum ?
                 MessageStatusEnum.SENDING.getStatus() : MessageStatusEnum.SENDED.getStatus();
-        if (ArraysUtil.contains(new Integer[]{
+        if (ArraysUtil.contains(new Integer[]{//"普通聊天消息"、"媒体文件"、"群组创建成功"、"添加好友打招呼消息"
                 MessageTypeEnum.CHAT.getType(), MessageTypeEnum.GROUP_CREATE.getType(),
                 MessageTypeEnum.ADD_FRIEND.getType(), MessageTypeEnum.MEDIA_CHAT.getType()
         }, messageTypeEnum.getType())) {
@@ -218,7 +218,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             chatSession.setLastReceiveTime(curTime);
             chatSessionMapper.updateBySessionId(chatSession, sessionId);
 
-            //记录消息消息表(ChatMessage)
+            //记录消息表(ChatMessage)
             chatMessage.setSessionId(sessionId);
             chatMessage.setSendUserId(sendUserId);
             chatMessage.setSendUserNickName(tokenUserInfoDto.getNickName());
@@ -228,19 +228,24 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             chatMessageMapper.insert(chatMessage);
         }
 
+        //发送消息
         MessageSendDto messageSend = CopyTools.copy(chatMessage, MessageSendDto.class);
-        if (Constants.ROBOT_UID.equals(contactId)) {
+
+        if (Constants.ROBOT_UID.equals(contactId)) {//和机器人聊天
             SysSettingDto sysSettingDto = redisComponet.getSysSetting();
             TokenUserInfoDto robot = new TokenUserInfoDto();
             robot.setUserId(sysSettingDto.getRobotUid());
             robot.setNickName(sysSettingDto.getRobotNickName());
+            //封装机器人回复的消息到ChatMessage
             ChatMessage robotChatMessage = new ChatMessage();
             robotChatMessage.setContactId(sendUserId);
-            //这里可以对接Ai 根据输入的信息做出回答
+            //TODO 这里可以对接Ai 根据输入的信息做出回答
             robotChatMessage.setMessageContent("我只是一个机器人无法识别你的消息");
             robotChatMessage.setMessageType(MessageTypeEnum.CHAT.getType());
+            //设置机器人的回复消息
             saveMessage(robotChatMessage, robot);
         } else {
+            //发送消息(和好友，在群组发消息)
             messageHandler.sendMessage(messageSend);
         }
         return messageSend;
