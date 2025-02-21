@@ -81,7 +81,10 @@ public class ChatController extends ABaseController {
         return getSuccessResponseVO(messageSendDto);
     }
 
-    /*@RequestMapping("uploadFile")
+    /**
+     * 文件上传
+     */
+    @RequestMapping("uploadFile")
     @GlobalInterceptor
     public ResponseVO uploadFile(HttpServletRequest request, @NotNull Long messageId,
                                  @NotNull MultipartFile file, @NotNull MultipartFile cover) {
@@ -90,6 +93,7 @@ public class ChatController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
+/*
     @RequestMapping("downloadFile")
     @GlobalInterceptor
     public void downloadFile(HttpServletRequest request, HttpServletResponse response,
