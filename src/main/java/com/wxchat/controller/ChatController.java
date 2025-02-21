@@ -67,7 +67,7 @@ public class ChatController extends ABaseController {
             //消息类型必须有且必须是"普通聊天消息"类型或者"媒体文件"类型
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
-        //获取当前用户信息
+        //获取用户信息
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setContactId(contactId);

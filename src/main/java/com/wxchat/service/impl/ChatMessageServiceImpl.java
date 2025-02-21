@@ -23,6 +23,7 @@ import com.wxchat.service.ChatMessageService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.DateUtil;
 import com.wxchat.utils.StringTools;
+import com.wxchat.websocket.MessageHandler;
 import jodd.util.ArraysUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     @Resource
     private ChatSessionMapper<ChatSession, ChatSessionQuery> chatSessionMapper;
 
-    //@Resource
-    //private MessageHandler messageHandler;
+    @Resource
+    private MessageHandler messageHandler;
 
     @Resource
     private AppConfig appConfig;
@@ -167,17 +168,21 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     public MessageSendDto saveMessage(ChatMessage chatMessage, TokenUserInfoDto tokenUserInfoDto) {
         //不是机器人回复，判断好友状态
-        if (!Constants.ROBOT_UID.equals(tokenUserInfoDto.getUserId())) {
+        if (!Constants.ROBOT_UID.equals(tokenUserInfoDto.getUserId())) {//TODO 为什么是 tokenUserInfoDto.getUserId()
+            //获取用户联系人(好友，加入的群组，机器人)列表
             List<String> contactList = redisComponet.getUserContactList(tokenUserInfoDto.getUserId());
             if (!contactList.contains(chatMessage.getContactId())) {
                 UserContactTypeEnum userContactTypeEnum = UserContactTypeEnum.getByPrefix(chatMessage.getContactId());
                 if (UserContactTypeEnum.USER == userContactTypeEnum) {
+                    //不是好友
                     throw new BusinessException(ResponseCodeEnum.CODE_902);
                 } else {
+                    //不在群组中
                     throw new BusinessException(ResponseCodeEnum.CODE_903);
                 }
             }
         }
+        //
         String sessionId = null;
         String sendUserId = tokenUserInfoDto.getUserId();
         String contactId = chatMessage.getContactId();
@@ -231,7 +236,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             robotChatMessage.setMessageType(MessageTypeEnum.CHAT.getType());
             saveMessage(robotChatMessage, robot);
         } else {
-            //messageHandler.sendMessage(messageSend);
+            messageHandler.sendMessage(messageSend);
         }
         return messageSend;
     }
