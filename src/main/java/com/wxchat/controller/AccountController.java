@@ -10,8 +10,10 @@ import com.wxchat.entity.vo.UserInfoVO;
 import com.wxchat.exception.BusinessException;
 import com.wxchat.redis.RedisComponet;
 import com.wxchat.redis.RedisUtils;
+import com.wxchat.service.UserContactService;
 import com.wxchat.service.UserInfoService;
 import com.wxchat.utils.CopyTools;
+import com.wxchat.websocket.MessageHandler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,11 +36,11 @@ public class AccountController extends ABaseController {
     @Resource
     private RedisUtils redisUtils;
 
-    //@Resource
-    //private MessageHandler messageHandler;
+    @Resource
+    private MessageHandler messageHandler;
 
-    //@Resource
-    //private UserContactService userContactService;
+    @Resource
+    private UserContactService userContactService;
 
     @Resource
     private RedisComponet redisComponet;

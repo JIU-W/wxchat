@@ -191,7 +191,7 @@ public class ChannelContextUtils {
     }
 
     /**
-     * 删除通道连接异常
+     * 删除通道连接异常  用户退出登录的时候就会自动调用这个方法
      * @param channel
      */
     public void removeContext(Channel channel) {
@@ -243,7 +243,7 @@ public class ChannelContextUtils {
     }
 
     /**
-     * 关闭通道连接
+     * 关闭通道连接  (强制用户退出登录，强制用户下线时会调用这个方法)
      * @param userId
      */
     public void closeContext(String userId) {
@@ -254,7 +254,7 @@ public class ChannelContextUtils {
         redisComponet.cleanUserTokenByUserId(userId);
         //从用户通道中获取channel
         Channel channel = USER_CONTEXT_MAP.get(userId);
-        //从用户通道中删除
+        //从map集合中移除用户通道
         USER_CONTEXT_MAP.remove(userId);
         if (channel != null) {
             channel.close();//关闭channel

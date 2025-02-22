@@ -9,6 +9,7 @@ import com.wxchat.entity.vo.UserInfoVO;
 import com.wxchat.service.UserInfoService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
+import com.wxchat.websocket.ChannelContextUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,8 +30,8 @@ public class UserInfoController extends ABaseController {
     @Resource
     private UserInfoService userInfoService;
 
-    //@Resource
-    //private ChannelContextUtils channelContextUtils;
+    @Resource
+    private ChannelContextUtils channelContextUtils;
 
     /**
      * 获取用户信息
@@ -84,8 +85,8 @@ public class UserInfoController extends ABaseController {
         UserInfo userInfo = new UserInfo();
         userInfo.setPassword(StringTools.encodeByMD5(password));
         this.userInfoService.updateUserInfoByUserId(userInfo, tokenUserInfoDto.getUserId());
-        //TODO 强制退出，重新登录
-        //channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
+        //强制退出，重新登录
+        channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
         return getSuccessResponseVO(null);
     }
 
@@ -98,8 +99,8 @@ public class UserInfoController extends ABaseController {
     @GlobalInterceptor
     public ResponseVO logout(HttpServletRequest request) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
-        //关闭ws连接
-        //channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
+        //强制退出，关闭ws连接
+        channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
         return getSuccessResponseVO(null);
     }
 
