@@ -82,6 +82,12 @@ public interface GroupInfoService {
      */
     void dissolutionGroup(String userId, String groupId);
 
+    /**
+     * 退出群聊
+     * @param userId
+     * @param groupId
+     * @param messageTypeEnum
+     */
     void leaveGroup(String userId, String groupId, MessageTypeEnum messageTypeEnum);
 
     void addOrRemoveGroupUser(TokenUserInfoDto tokenUserInfoDto, String groupId, String contactIds, Integer opType);

@@ -10,6 +10,8 @@ import com.wxchat.service.UserInfoService;
 import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
 import com.wxchat.websocket.ChannelContextUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +28,8 @@ import java.io.IOException;
 @RestController("userInfoController")
 @RequestMapping("/userInfo")
 public class UserInfoController extends ABaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserInfoController.class);
 
     @Resource
     private UserInfoService userInfoService;
@@ -99,7 +103,8 @@ public class UserInfoController extends ABaseController {
     @GlobalInterceptor
     public ResponseVO logout(HttpServletRequest request) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
-        //强制退出，关闭ws连接
+        logger.info("用户退出登录，userId:{}", tokenUserInfoDto.getUserId());
+        //强制退出登录(其中包括"关闭channel")
         channelContextUtils.closeContext(tokenUserInfoDto.getUserId());
         return getSuccessResponseVO(null);
     }

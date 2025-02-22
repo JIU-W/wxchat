@@ -324,22 +324,24 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         updateUserContact.setStatus(UserContactStatusEnum.DEL.getStatus());
         userContactMapper.updateByParam(updateUserContact, userContactQuery);
 
-        //TODO 移除相关群员的联系人缓存
-        //TODO 发消息  1、更新会话信息 2、记录群消息 3、发送解散通知消息
-        /*List<UserContact> userContactList = this.userContactMapper.selectList(userContactQuery);
+        //移除相关群员的联系人缓存
+        List<UserContact> userContactList = this.userContactMapper.selectList(userContactQuery);
         for (UserContact userContact : userContactList) {
             redisComponet.removeUserContact(userContact.getUserId(), userContact.getContactId());
         }
 
+        //生成会话id
         String sessionId = StringTools.getChatSessionId4Group(groupId);
         Date curTime = new Date();
         String messageContent = MessageTypeEnum.DISSOLUTION_GROUP.getInitMessage();
-        //更新会话消息
+
+        //更新会话表信息
         ChatSession chatSession = new ChatSession();
         chatSession.setLastMessage(messageContent);
         chatSession.setLastReceiveTime(curTime.getTime());
-        //chatSessionMapper.updateBySessionId(chatSession, sessionId);
-        //记录消息消息表
+        chatSessionMapper.updateBySessionId(chatSession, sessionId);
+
+        //插入消息到"消息表"
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setSessionId(sessionId);
         chatMessage.setSendTime(curTime.getTime());
@@ -348,11 +350,11 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         chatMessage.setMessageType(MessageTypeEnum.DISSOLUTION_GROUP.getType());
         chatMessage.setContactId(groupId);
         chatMessage.setMessageContent(messageContent);
-        //chatMessageMapper.insert(chatMessage);
-        //发送解散群消息
-        MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
-        //messageHandler.sendMessage(messageSendDto);*/
+        chatMessageMapper.insert(chatMessage);
 
+        //发送"解散群"消息
+        MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
+        messageHandler.sendMessage(messageSendDto);
     }
 
     @Override

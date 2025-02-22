@@ -149,7 +149,7 @@ public class GroupController extends ABaseController {
      * @param request
      * @param groupId
      * @return
-     *//*
+     */
     @RequestMapping(value = "/leaveGroup")
     @GlobalInterceptor
     public ResponseVO leaveGroup(HttpServletRequest request, @NotEmpty String groupId) {
@@ -158,12 +158,12 @@ public class GroupController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
-    *//**
+    /**
      * 解散群
      * @param request
      * @param groupId
      * @return
-     *//*
+     */
     @RequestMapping(value = "/dissolutionGroup")
     @GlobalInterceptor
     public ResponseVO dissolutionGroup(HttpServletRequest request, @NotEmpty String groupId) {
@@ -173,21 +173,22 @@ public class GroupController extends ABaseController {
     }
 
 
-    *//**
+    /**
      * 添加或者移除人员
      * @param request
      * @param groupId
      * @param selectContacts
      * @param opType
      * @return
-     *//*
+     */
     @RequestMapping(value = "/addOrRemoveGroupUser")
     @GlobalInterceptor
-    public ResponseVO addOrRemoveGroupUser(HttpServletRequest request, @NotEmpty String groupId, @NotEmpty String selectContacts,
+    public ResponseVO addOrRemoveGroupUser(HttpServletRequest request, @NotEmpty String groupId,
+                                           @NotEmpty String selectContacts,
                                            @NotNull Integer opType) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
         groupInfoService.addOrRemoveGroupUser(tokenUserInfoDto, groupId, selectContacts, opType);
         return getSuccessResponseVO(null);
-    }*/
+    }
 
 }
