@@ -1,5 +1,6 @@
 package com.wxchat.service.impl;
 
+import com.wxchat.InitRun;
 import com.wxchat.entity.config.AppConfig;
 import com.wxchat.entity.constants.Constants;
 import com.wxchat.entity.dto.MessageSendDto;
@@ -25,6 +26,8 @@ import com.wxchat.utils.CopyTools;
 import com.wxchat.utils.StringTools;
 import com.wxchat.websocket.MessageHandler;
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,6 +45,9 @@ import java.util.stream.Collectors;
  */
 @Service("userInfoService")
 public class UserInfoServiceImpl implements UserInfoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserInfoServiceImpl.class);
+
 
     @Resource
     private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
@@ -357,6 +363,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @param userId
      */
     public void forceOffLine(String userId) {
+        logger.info("管理员让用户{}强制下线", userId);
         MessageSendDto sendDto = new MessageSendDto();
         sendDto.setContactType(UserContactTypeEnum.USER.getType());
         sendDto.setMessageType(MessageTypeEnum.FORCE_OFF_LINE.getType());

@@ -87,12 +87,15 @@ public class UserInfo implements Serializable {
      */
     private Long lastOffTime;
 
+    //在线状态
     private Integer onlineType;
 
     public Integer getOnlineType() {
         if (lastLoginTime != null && lastLoginTime.getTime() > lastOffTime) {
+            //用户在线
             return Constants.ONE;
         } else {
+            //用户离线
             return Constants.ZERO;
         }
     }
