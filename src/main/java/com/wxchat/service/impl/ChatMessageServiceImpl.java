@@ -321,15 +321,18 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         messageHandler.sendMessage(messageSend);
     }
 
-    @Override
     public File downloadFile(TokenUserInfoDto userInfoDto, Long messageId, Boolean cover) {
+        //获取消息
         ChatMessage message = chatMessageMapper.selectByMessageId(messageId);
         String contactId = message.getContactId();
         UserContactTypeEnum contactTypeEnum = UserContactTypeEnum.getByPrefix(contactId);
-        if (UserContactTypeEnum.USER.getType().equals(contactTypeEnum) && !userInfoDto.getUserId().equals(message.getContactId())) {
+        if (UserContactTypeEnum.USER.equals(contactTypeEnum) &&
+                !userInfoDto.getUserId().equals(message.getContactId())) {
+            //"来下载消息文件的当前用户"不是"消息的接收者"
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
-        if (UserContactTypeEnum.GROUP.getType().equals(contactTypeEnum)) {
+        if (UserContactTypeEnum.GROUP.equals(contactTypeEnum)) {
+            //判断当前用户在不在群里面，不在的话不能下载消息文件
             UserContactQuery userContactQuery = new UserContactQuery();
             userContactQuery.setUserId(userInfoDto.getUserId());
             userContactQuery.setContactType(UserContactTypeEnum.GROUP.getType());
@@ -347,9 +350,10 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         }
         String fileName = message.getFileName();
         String fileExtName = StringTools.getFileSuffix(fileName);
+        //新文件名：消息id + 文件后缀
         String fileRealName = messageId + fileExtName;
 
-        if (cover != null && cover) {
+        if (cover != null && cover) {//下载封面而不是原始文件
             fileRealName = fileRealName + Constants.COVER_IMAGE_SUFFIX;
         }
         File file = new File(folder.getPath() + "/" + fileRealName);

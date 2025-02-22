@@ -101,7 +101,7 @@ public class ChatController extends ABaseController {
      * @param request
      * @param response
      * @param fileId
-     * @param showCover 是不是下载封面
+     * @param showCover 判断是"下载封面"还是"下载原始文件"
      * @throws Exception
      */
     @RequestMapping("downloadFile")
@@ -131,8 +131,11 @@ public class ChatController extends ABaseController {
                 file = chatMessageService.downloadFile(userInfoDto, Long.parseLong(fileId), showCover);
             }
             response.setContentType("application/x-msdownload; charset=UTF-8");
+            //application/x-msdownload：主要用于提示浏览器直接下载文件(而非预览)
             response.setHeader("Content-Disposition", "attachment;");
+            //attachment：指示浏览器以附件形式处理响应，强制下载而非展示
             response.setContentLengthLong(file.length());
+            //通过 Content-Length 头部告知客户端文件大小，便于显示进度条及优化传输（如持久连接）
             in = new FileInputStream(file);
             byte[] byteData = new byte[1024];
             out = response.getOutputStream();

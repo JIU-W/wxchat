@@ -83,5 +83,9 @@ public interface ChatMessageService {
      */
     void saveMessageFile(String userId, Long messageId, MultipartFile file, MultipartFile cover);
 
+    /**
+     * 下载消息文件(消息接收人客户端从服务端下载到自己的客户端)
+     */
     File downloadFile(TokenUserInfoDto userInfoDto, Long messageId, Boolean cover);
+
 }
