@@ -280,18 +280,23 @@ public class ChannelContextUtils {
 
         //以下是特殊情况
 
-        //移除群聊
+        //(1.用户主动退群、2.群主将用户移除群聊)这两种特殊情况的特殊处理
         MessageTypeEnum messageTypeEnum = MessageTypeEnum.getByType(messageSendDto.getMessageType());
         if (MessageTypeEnum.LEAVE_GROUP == messageTypeEnum || MessageTypeEnum.REMOVE_GROUP == messageTypeEnum) {
+            //获取退出群聊的用户id
             String userId = (String) messageSendDto.getExtendData();
+            //从redis中删除该用户和群组之间的联系
             redisComponet.removeUserContact(userId, messageSendDto.getContactId());
+            //从map集合中获取"用户通道"
             Channel channel = USER_CONTEXT_MAP.get(userId);
             if (channel == null) {
                 return;
             }
+            //从"群组通道ChannelGroup"中移除该用户的"用户通道Channel"(也就是用户退群了)
             group.remove(channel);
         }
 
+        //"解散群组"的特殊情况
         if (MessageTypeEnum.DISSOLUTION_GROUP == messageTypeEnum) {
             GROUP_CONTEXT_MAP.remove(messageSendDto.getContactId());
             group.close();

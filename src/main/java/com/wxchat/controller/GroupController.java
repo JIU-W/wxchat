@@ -146,14 +146,13 @@ public class GroupController extends ABaseController {
 
     /**
      * 退群
-     * @param request
-     * @param groupId
      * @return
      */
     @RequestMapping(value = "/leaveGroup")
     @GlobalInterceptor
     public ResponseVO leaveGroup(HttpServletRequest request, @NotEmpty String groupId) {
         TokenUserInfoDto tokenUserInfoDto = getTokenUserInfo(request);
+        //退群
         groupInfoService.leaveGroup(tokenUserInfoDto.getUserId(), groupId, MessageTypeEnum.LEAVE_GROUP);
         return getSuccessResponseVO(null);
     }
@@ -177,7 +176,7 @@ public class GroupController extends ABaseController {
      * 添加或者移除群组成员 (只有"群主"可以添加或者移除群组成员)
      * @param request
      * @param groupId 群组ID
-     * @param selectContacts 好友ID(添加)或者选中的群成员ID(移除)，多个以逗号隔开
+     * @param selectContacts "选中的好友ID"(添加) 或者 选中的群成员ID(移除)，多个以逗号隔开
      * @param opType 操作类型(0:移除 1:添加)
      * @return
      */

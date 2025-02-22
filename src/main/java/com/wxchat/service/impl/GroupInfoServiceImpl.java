@@ -364,12 +364,13 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         if (groupInfo == null) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
-        //创建者不能退出群聊，只能解散群
+        //群主(创建者)不能退出群聊，只能解散群
         if (userId.equals(groupInfo.getGroupOwnerId())) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
+        //删除用户的"联系人信息"
         Integer count = userContactMapper.deleteByUserIdAndContactId(userId, groupId);
-        if (count == 0) {
+        if (count == 0) {//删除失败
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
 
@@ -378,12 +379,14 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         String sessionId = StringTools.getChatSessionId4Group(groupId);
         Date curTime = new Date();
         String messageContent = String.format(messageTypeEnum.getInitMessage(), userInfo.getNickName());
+
         //更新会话消息
         ChatSession chatSession = new ChatSession();
         chatSession.setLastMessage(messageContent);
         chatSession.setLastReceiveTime(curTime.getTime());
-        //chatSessionMapper.updateBySessionId(chatSession, sessionId);
-        //记录消息消息表
+        chatSessionMapper.updateBySessionId(chatSession, sessionId);
+
+        //添加消息到消息表
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setSessionId(sessionId);
         chatMessage.setSendTime(curTime.getTime());
@@ -397,11 +400,13 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         UserContactQuery userContactQuery = new UserContactQuery();
         userContactQuery.setContactId(groupId);
         userContactQuery.setStatus(UserContactStatusEnum.FRIEND.getStatus());
-        Integer memberCount = this.userContactMapper.selectCount(userContactQuery);
+        //查询该群组的所有成员
+        Integer memberCount = userContactMapper.selectCount(userContactQuery);
 
         MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
-        messageSendDto.setExtendData(userId);
-        messageSendDto.setMemberCount(memberCount);
+        messageSendDto.setExtendData(userId);//退出群聊的用户id
+        messageSendDto.setMemberCount(memberCount);//最新的群成员数量
+        //发送消息到redis主题(让在群里的用户的客户端 更新群成员数量)
         messageHandler.sendMessage(messageSendDto);
     }
 
