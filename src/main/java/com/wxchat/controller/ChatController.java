@@ -96,12 +96,12 @@ public class ChatController extends ABaseController {
 
 
     /**
-     * 文件下载(下载头像，这其中包括自己的头像，也包括用户点击查看的别人的头像)
-     *                                         (消息接收人客户端从服务端下载到自己的客户端)
+     * 文件下载  (1.用户下载、预览头像，这其中包括"自己的头像"，也包括用户点击查看的"别人的头像")
+     *          (2.消息接收人客户端从服务端下载到自己的客户端)
      * @param request
      * @param response
      * @param fileId
-     * @param showCover
+     * @param showCover 是不是下载封面
      * @throws Exception
      */
     @RequestMapping("downloadFile")
@@ -113,10 +113,12 @@ public class ChatController extends ABaseController {
         FileInputStream in = null;
         try {
             File file = null;
-            if (!StringTools.isNumber(fileId)) {//fileId(举例：U73545489628，G13542462390)不全是数字，则下载头像
+            if (!StringTools.isNumber(fileId)) {//第一种情况：下载头像
+                //fileId(举例：U73545489628，G13542462390)不全是数字
                 String avatarFolderName = Constants.FILE_FOLDER_FILE + Constants.FILE_FOLDER_AVATAR_NAME;
                 String avatarPath = appConfig.getProjectFolder() + avatarFolderName +
                         fileId + Constants.IMAGE_SUFFIX;
+                //判断是不是下载封面
                 if (showCover) {
                     avatarPath = avatarPath + Constants.COVER_IMAGE_SUFFIX;
                 }
@@ -124,7 +126,8 @@ public class ChatController extends ABaseController {
                 if (!file.exists()) {
                     throw new BusinessException(ResponseCodeEnum.CODE_602);
                 }
-            } else {
+            } else {//第二种情况：下载消息文件
+                //消息接收人客户端从服务端下载到自己的客户端
                 file = chatMessageService.downloadFile(userInfoDto, Long.parseLong(fileId), showCover);
             }
             response.setContentType("application/x-msdownload; charset=UTF-8");
