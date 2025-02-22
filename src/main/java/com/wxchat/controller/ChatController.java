@@ -96,7 +96,8 @@ public class ChatController extends ABaseController {
 
 
     /**
-     * 文件下载  (1.用户下载、预览头像，这其中包括"自己的头像"，也包括用户点击查看的"别人的头像")
+     * 文件下载  (1.用户下载、预览头像，这其中包括"自己的头像"，也包括用户点击查看的"别人的头像"，
+     *          还包括用户点击"自己加入的群组的群头像"，自己的聊天机器人头像)
      *          (2.消息接收人客户端从服务端下载到自己的客户端)
      * @param request
      * @param response
@@ -131,11 +132,8 @@ public class ChatController extends ABaseController {
                 file = chatMessageService.downloadFile(userInfoDto, Long.parseLong(fileId), showCover);
             }
             response.setContentType("application/x-msdownload; charset=UTF-8");
-            //application/x-msdownload：主要用于提示浏览器直接下载文件(而非预览)
             response.setHeader("Content-Disposition", "attachment;");
-            //attachment：指示浏览器以附件形式处理响应，强制下载而非展示
             response.setContentLengthLong(file.length());
-            //通过 Content-Length 头部告知客户端文件大小，便于显示进度条及优化传输（如持久连接）
             in = new FileInputStream(file);
             byte[] byteData = new byte[1024];
             out = response.getOutputStream();

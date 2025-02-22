@@ -21,13 +21,13 @@ public class SysSettingDto implements Serializable {
     private Integer maxGroupMemberCount = 500;
 
     //允许上传的图片的最大大小，单位MB
-    private Integer maxImageSize = 2;
+    private Integer maxImageSize = 10;
 
     //允许上传的视频的最大大小，单位MB
-    private Integer maxVideoSize = 5;
+    private Integer maxVideoSize = 30;
 
     //其它文件上传的最大大小，单位MB
-    private Integer maxFileSize = 5;
+    private Integer maxFileSize = 30;
 
     //机器人的ID
     private String robotUid = Constants.ROBOT_UID;
