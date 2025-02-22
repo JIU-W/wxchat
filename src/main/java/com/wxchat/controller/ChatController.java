@@ -82,7 +82,7 @@ public class ChatController extends ABaseController {
     }
 
     /**
-     * 文件上传
+     * 文件上传(消息发送人客户端上传到服务端)
      */
     @RequestMapping("uploadFile")
     @GlobalInterceptor
@@ -94,7 +94,16 @@ public class ChatController extends ABaseController {
         return getSuccessResponseVO(null);
     }
 
-/*
+
+    /**
+     * 文件下载(下载头像，这其中包括自己的头像，也包括用户点击查看的别人的头像)
+     *                                         (消息接收人客户端从服务端下载到自己的客户端)
+     * @param request
+     * @param response
+     * @param fileId
+     * @param showCover
+     * @throws Exception
+     */
     @RequestMapping("downloadFile")
     @GlobalInterceptor
     public void downloadFile(HttpServletRequest request, HttpServletResponse response,
@@ -104,9 +113,10 @@ public class ChatController extends ABaseController {
         FileInputStream in = null;
         try {
             File file = null;
-            if (!StringTools.isNumber(fileId)) {
+            if (!StringTools.isNumber(fileId)) {//fileId(举例：U73545489628，G13542462390)不全是数字，则下载头像
                 String avatarFolderName = Constants.FILE_FOLDER_FILE + Constants.FILE_FOLDER_AVATAR_NAME;
-                String avatarPath = appConfig.getProjectFolder() + avatarFolderName + fileId + Constants.IMAGE_SUFFIX;
+                String avatarPath = appConfig.getProjectFolder() + avatarFolderName +
+                        fileId + Constants.IMAGE_SUFFIX;
                 if (showCover) {
                     avatarPath = avatarPath + Constants.COVER_IMAGE_SUFFIX;
                 }
@@ -131,6 +141,7 @@ public class ChatController extends ABaseController {
         } finally {
             if (out != null) {
                 try {
+                    //关闭流
                     out.close();
                 } catch (IOException e) {
                     logger.error("IO异常", e);
@@ -138,6 +149,7 @@ public class ChatController extends ABaseController {
             }
             if (in != null) {
                 try {
+                    //关闭流
                     in.close();
                 } catch (IOException e) {
                     logger.error("IO异常", e);
@@ -147,6 +159,6 @@ public class ChatController extends ABaseController {
 
     }
 
-*/
+
 
 }

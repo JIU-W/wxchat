@@ -50,6 +50,9 @@ public class StringTools {
         return field.substring(0, 1).toUpperCase() + field.substring(1);
     }
 
+    /**
+     * 判断字符串的每个字符是否都是数字
+     */
     public static boolean isNumber(String str) {
         String checkNumber = "^[0-9]+$";
         if (null == str) {
