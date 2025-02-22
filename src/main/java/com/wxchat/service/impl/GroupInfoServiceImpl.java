@@ -357,7 +357,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         messageHandler.sendMessage(messageSendDto);
     }
 
-    @Override
+
     @Transactional(rollbackFor = Exception.class)
     public void leaveGroup(String userId, String groupId, MessageTypeEnum messageTypeEnum) {
         GroupInfo groupInfo = groupInfoMapper.selectByGroupId(groupId);
@@ -392,7 +392,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         chatMessage.setMessageType(messageTypeEnum.getType());
         chatMessage.setContactId(groupId);
         chatMessage.setMessageContent(messageContent);
-        //chatMessageMapper.insert(chatMessage);
+        chatMessageMapper.insert(chatMessage);
 
         UserContactQuery userContactQuery = new UserContactQuery();
         userContactQuery.setContactId(groupId);
@@ -402,25 +402,28 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
         messageSendDto.setExtendData(userId);
         messageSendDto.setMemberCount(memberCount);
-        //messageHandler.sendMessage(messageSendDto);
+        messageHandler.sendMessage(messageSendDto);
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
 
-    public void addOrRemoveGroupUser(TokenUserInfoDto tokenUserInfoDto, String groupId, String contactIds, Integer opType) {
+    @Transactional(rollbackFor = Exception.class)
+    public void addOrRemoveGroupUser(TokenUserInfoDto tokenUserInfoDto, String groupId,
+                                     String contactIds, Integer opType) {
         GroupInfo groupInfo = groupInfoMapper.selectByGroupId(groupId);
         if (null == groupInfo || !groupInfo.getGroupOwnerId().equals(tokenUserInfoDto.getUserId())) {
             throw new BusinessException(ResponseCodeEnum.CODE_600);
         }
         String[] contactIdList = contactIds.split(",");
         for (String contactId : contactIdList) {
-            //移除群员
             if (Constants.ZERO.equals(opType)) {
+                //移除群员
                 groupInfoService.leaveGroup(contactId, groupId, MessageTypeEnum.REMOVE_GROUP);
             } else {
-                userContactService.addContact(contactId, null, groupId, UserContactTypeEnum.GROUP.getType(), null);
+                //添加群员
+                userContactService.addContact(contactId, null, groupId,
+                        UserContactTypeEnum.GROUP.getType(), null);
             }
         }
     }
+
 }

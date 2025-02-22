@@ -90,5 +90,9 @@ public interface GroupInfoService {
      */
     void leaveGroup(String userId, String groupId, MessageTypeEnum messageTypeEnum);
 
+    /**
+     * 添加或删除群聊成员
+     */
     void addOrRemoveGroupUser(TokenUserInfoDto tokenUserInfoDto, String groupId, String contactIds, Integer opType);
+
 }
