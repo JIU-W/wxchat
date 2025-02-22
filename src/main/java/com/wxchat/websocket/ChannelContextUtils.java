@@ -298,7 +298,9 @@ public class ChannelContextUtils {
 
         //"解散群组"的特殊情况
         if (MessageTypeEnum.DISSOLUTION_GROUP == messageTypeEnum) {
+            //从map集合中移除该群组对应的"群组通道"
             GROUP_CONTEXT_MAP.remove(messageSendDto.getContactId());
+            //关闭"群组通道ChannelGroup"
             group.close();
         }
 

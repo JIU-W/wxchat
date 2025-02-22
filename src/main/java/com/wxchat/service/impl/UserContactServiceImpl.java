@@ -354,6 +354,8 @@ public class UserContactServiceImpl implements UserContactService {
             GroupInfo groupInfo = this.groupInfoMapper.selectByGroupId(contactId);
             chatSessionUser.setContactName(groupInfo.getGroupName());
             chatSessionUser.setSessionId(sessionId);
+            //为什么是insertOrUpdate，而不是insert，因为"用户加入的群组"可能是"之前加入过的又退出的群"，所以
+            //这种情况会话是需要更新，而不是插入。
             this.chatSessionUserMapper.insertOrUpdate(chatSessionUser);
 
 
