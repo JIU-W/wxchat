@@ -352,13 +352,17 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfoMapper.updateByUserId(updateInfo, userId);
     }
 
-
+    /**
+     * 强制下线
+     * @param userId
+     */
     public void forceOffLine(String userId) {
         MessageSendDto sendDto = new MessageSendDto();
         sendDto.setContactType(UserContactTypeEnum.USER.getType());
         sendDto.setMessageType(MessageTypeEnum.FORCE_OFF_LINE.getType());
         sendDto.setContactId(userId);
-        //messageHandler.sendMessage(sendDto);
+        //发送消息
+        messageHandler.sendMessage(sendDto);
     }
 
 }

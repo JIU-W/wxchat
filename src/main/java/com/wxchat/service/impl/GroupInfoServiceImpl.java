@@ -406,7 +406,7 @@ public class GroupInfoServiceImpl implements GroupInfoService {
         MessageSendDto messageSendDto = CopyTools.copy(chatMessage, MessageSendDto.class);
         messageSendDto.setExtendData(userId);//退出群聊的用户id
         messageSendDto.setMemberCount(memberCount);//最新的群成员数量
-        //发送消息到redis主题(让在群里的用户的客户端 更新群成员数量)
+        //发送消息到redis主题(让群成员知道"谁退出群组了"或者是"谁被群主踢出群组了"，让在群里的用户的客户端"更新群成员数量")
         messageHandler.sendMessage(messageSendDto);
     }
 

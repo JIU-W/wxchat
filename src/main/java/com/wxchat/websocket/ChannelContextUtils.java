@@ -236,7 +236,9 @@ public class ChannelContextUtils {
         String contactId = messageSendDto.getContactId();
         //发送消息
         sendMsg(messageSendDto, contactId);
-        if (MessageTypeEnum.FORCE_OFF_LINE.getType().equals(messageSendDto.getMessageType())) {//强制下线
+
+        //"强制下线"特殊情况的处理
+        if (MessageTypeEnum.FORCE_OFF_LINE.getType().equals(messageSendDto.getMessageType())) {
             //关闭通道
             closeContext(contactId);
         }
