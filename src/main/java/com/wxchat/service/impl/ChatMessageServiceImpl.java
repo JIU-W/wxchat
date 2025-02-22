@@ -283,8 +283,9 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         String fileName = file.getOriginalFilename();
         //文件后缀名
         String fileExtName = StringTools.getFileSuffix(fileName);
-        //文件名进行重新命名：消息id + 文件后缀
+        //新文件名：消息id + 文件后缀
         String fileRealName = messageId + fileExtName;
+        //获取文件发送时间对应的"年月"，用来组成文件路径
         String month = DateUtil.format(new Date(message.getSendTime()), DateTimePatternEnum.YYYYMM.getPattern());
         File folder = new File(appConfig.getProjectFolder() + Constants.FILE_FOLDER_FILE + month);
         if (!folder.exists()) {
@@ -294,24 +295,29 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         File uploadFile = new File(folder.getPath() + "/" + fileRealName);
         try {
             file.transferTo(uploadFile);
+            //cover是文件对应的缩略图
             if (cover != null) {
                 cover.transferTo(new File(uploadFile.getPath() + Constants.COVER_IMAGE_SUFFIX));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("上传文件失败", e);
             throw new BusinessException("文件上传失败");
         }
+        //修改消息状态
         ChatMessage updateInfo = new ChatMessage();
         updateInfo.setStatus(MessageStatusEnum.SENDED.getStatus());
         ChatMessageQuery messageQuery = new ChatMessageQuery();
         messageQuery.setMessageId(messageId);
         chatMessageMapper.updateByParam(updateInfo, messageQuery);
 
+        //发送消息(发送给"要接收这个图片文件的客户端")(这个消息不用入库)
         MessageSendDto messageSend = new MessageSendDto();
         messageSend.setStatus(MessageStatusEnum.SENDED.getStatus());
         messageSend.setMessageId(message.getMessageId());
         messageSend.setMessageType(MessageTypeEnum.FILE_UPLOAD.getType());
         messageSend.setContactId(message.getContactId());
+        //发送消息到redis主题
         messageHandler.sendMessage(messageSend);
     }
 
