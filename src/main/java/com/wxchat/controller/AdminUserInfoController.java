@@ -47,13 +47,14 @@ public class AdminUserInfoController extends ABaseController {
     }
 
     /**
-     * 强制下线
+     * 强制用户下线
      * @param userId
      * @return
      */
     @RequestMapping("/forceOffLine")
     @GlobalInterceptor(checkAdmin = true)
     public ResponseVO forceOffLine(@NotEmpty String userId) {
+        //强制用户下线
         userInfoService.forceOffLine(userId);
         return getSuccessResponseVO(null);
     }
