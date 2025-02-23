@@ -81,13 +81,13 @@ public class ChannelContextUtils {
             String channelId = channel.id().toString();
             AttributeKey attributeKey = null;
             if (!AttributeKey.exists(channelId)) {
-                // 如果属性不存在，则创建一个属性
+                // 如果Channel属性不存在，则创建一个Channel属性
                 attributeKey = AttributeKey.newInstance(channel.id().toString());
             } else {
-                // 如果属性已经存在，则获取该属性
+                // 如果Channel属性已经存在，则获取该Channel属性
                 attributeKey = AttributeKey.valueOf(channel.id().toString());
             }
-            //设置属性为userId(后续会用到)
+            //设置属性为userId(后续会用到) (Channel属性存储用户ID)
             channel.attr(attributeKey).set(userId);
 
             //从redis里面获取用户的联系人信息(好友，群组)
@@ -195,9 +195,9 @@ public class ChannelContextUtils {
      * @param channel
      */
     public void removeContext(Channel channel) {
-        //获取属性
+        //获取Channel属性
         Attribute<String> attribute = channel.attr(AttributeKey.valueOf(channel.id().toString()));
-        //获取属性的值:userId
+        //获取属性的值：userId
         String userId = attribute.get();
         if (!StringTools.isEmpty(userId)) {
             //把用户通道从map集合中删除

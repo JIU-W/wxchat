@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 /**
- * @description  ws业务处理  (自定义websocket处理器)
+ * @description  ws业务处理  (自定义websocket处理器)  (定义一个Netty的 WebSocket消息处理器)
  * @author JIU-W
  * @date 2025-02-09
  * @version 1.0
@@ -31,6 +31,7 @@ import javax.annotation.Resource;
 @ChannelHandler.Sharable  //标记该handler可被多个channel安全共享，就是一个标记，没啥其他用处，但是Netty会检测
 @Component("handlerWebSocket")
 public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+                                      //表示专门处理文本类型的 WebSocket 帧(消息)
 
     private static final Logger logger = LoggerFactory.getLogger(HandlerWebSocket.class);
 
@@ -41,9 +42,9 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     private RedisComponet redisComponet;
 
     /**
-     * 当通道就绪后会调用此方法，通常我们会在这里做一些初始化操作
-     * (用户登录上线的时候就会自动调用这个方法)
-     *
+     * 连接建立时触发。        触发时机：当客户端与服务器建立 WebSocket 连接时
+     * 当通道就绪后会调用此方法，通常我们会在这里做一些初始化操作。
+     *                  (用户登录上线的时候就会自动调用这个方法)
      * @param ctx
      */
     @Override
@@ -53,8 +54,9 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     }
 
     /**
+     * 连接断开时触发    (客户端断开连接或服务器主动关闭连接)
      * 当通道不再活跃时（连接关闭）会调用此方法，我们可以在这里做一些清理工作
-     *                      (用户退出登录的时候就会自动调用这个方法)
+     *                    (用户退出登录的时候就会自动调用这个方法)
      */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
@@ -64,9 +66,8 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     }
 
     /**
-     * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。
+     * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。 (处理客户端消息)
      *                      (用于接收心跳)
-     *
      * @param ctx
      * @param textWebSocketFrame
      */
@@ -74,7 +75,7 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame textWebSocketFrame) throws Exception {
         //获取通道
         Channel channel = ctx.channel();
-        //获取通道属性
+        //获取通道属性(Channel属性)
         Attribute<String> attribute = channel.attr(AttributeKey.valueOf(channel.id().toString()));
         //获取通道属性的值：userId
         String userId = attribute.get();
@@ -84,20 +85,22 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     }
 
 
-    //用于处理用户自定义的事件  当有用户事件触发时会调用此方法，例如连接超时，异常等。
+
     /**
-     *
+     * 用于处理用户自定义的事件
+     * 当有用户事件触发时会调用此方法，例如连接超时，异常等。
      * @param ctx
      * @param evt
      */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
-        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
+        //判断是否是握手成功事件
+        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {//握手成功事件
             //获取用户连接成功后的信息
             WebSocketServerProtocolHandler.HandshakeComplete complete = (WebSocketServerProtocolHandler.HandshakeComplete) evt;
-            //获取url
+            //获取url：这个url是握手成功建立连接时走的 WebSocket(ws) 的url
             String url = complete.requestUri();
-            //从url中解析出token
+            //从握手请求url中解析token
             String token = getToken(url);
             if (token == null) {
                 ctx.channel().close();//关闭连接
