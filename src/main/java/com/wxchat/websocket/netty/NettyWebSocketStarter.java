@@ -83,7 +83,7 @@ public class NettyWebSocketStarter implements Runnable {
                             // readerIdleTime  读超时时间 即"测试端"一定时间内未接收到"被测试端"消息
                             // writerIdleTime  写超时时间 即"测试端"一定时间内向"被测试端"发送消息
                             // allIdleTime  所有类型的超时时间
-                            pipeline.addLast(new IdleStateHandler(60, 0,
+                            pipeline.addLast(new IdleStateHandler(6, 0,
                                     0, TimeUnit.SECONDS));
                             //4.心跳超时处理器
                             pipeline.addLast(new HandlerHeartBeat());

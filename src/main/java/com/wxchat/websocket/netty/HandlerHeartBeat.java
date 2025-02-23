@@ -27,8 +27,10 @@ public class HandlerHeartBeat extends ChannelDuplexHandler {
                 Attribute<String> attribute = ctx.channel().attr(AttributeKey.valueOf(ctx.channel().id().toString()));
                 //获取通道属性的值：userId
                 String userId = attribute.get();
+                //打印日志
                 logger.info("用户{}没有发送心跳断开连接", userId);
-                ctx.close();
+                //关闭通道(关闭当前Channel连接)
+                ctx.close();//也可以这样写： ctx.channel().close();   两者功能一样。
             } else if (e.state() == IdleState.WRITER_IDLE) {
                 ctx.writeAndFlush("heart");
             }

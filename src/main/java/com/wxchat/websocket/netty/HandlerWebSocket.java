@@ -85,11 +85,16 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
 
 
     //用于处理用户自定义的事件  当有用户事件触发时会调用此方法，例如连接超时，异常等。
+    /**
+     *
+     * @param ctx
+     * @param evt
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            WebSocketServerProtocolHandler.HandshakeComplete complete =
-                    (WebSocketServerProtocolHandler.HandshakeComplete) evt;
+            //获取用户连接成功后的信息
+            WebSocketServerProtocolHandler.HandshakeComplete complete = (WebSocketServerProtocolHandler.HandshakeComplete) evt;
             //获取url
             String url = complete.requestUri();
             //从url中解析出token
