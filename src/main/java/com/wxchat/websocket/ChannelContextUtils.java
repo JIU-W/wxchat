@@ -45,10 +45,14 @@ public class ChannelContextUtils {
     @Resource
     private RedisComponet redisComponet;
 
-    //用户通道  基于服务器内存存储，使用Map集合存储。  (Channel：用户通道，表示一个活跃的 WebSocket 连接通道)
+    //用户通道     (Channel：用户通道，表示一个活跃的 WebSocket 连接通道)
+    //1.所有客户端共用同一个Map(作为public static final变量，它们在整个 JVM 内共享，所有客户端连接共用同一份数据)
+    //2.数据存储在服务端内存中，仅限"当前服务实例"使用，分布式环境下需额外设计(如结合 Redis Pub/Sub)
+    //3.无法持久化：服务重启后数据丢失(这种情况很少发生，如果发生了就在"客户端和服务端重连的时候"再次重新从服务端获取消息数据)
     public static final ConcurrentMap<String, Channel> USER_CONTEXT_MAP = new ConcurrentHashMap();
 
-    //群组通道        (ChannelGroup：群组通道)
+    //群组通道    (ChannelGroup：群组通道)
+    //ChannelGroup是Netty提供的群组通信工具，可批量操作多个 Channel。
     public static final ConcurrentMap<String, ChannelGroup> GROUP_CONTEXT_MAP = new ConcurrentHashMap();
 
     @Resource
