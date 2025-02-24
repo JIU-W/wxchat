@@ -66,8 +66,9 @@ public class HandlerWebSocket extends SimpleChannelInboundHandler<TextWebSocketF
     }
 
     /**
-     * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。 (处理客户端消息)
-     *                      (用于接收心跳)
+     * 读就绪事件 当有消息可读时会调用此方法，我们可以在这里读取消息并处理。
+     *              (处理客户端发送的ws消息，当客户端通过WebSocket发送文本消息时，服务器会触发channelRead0方法)
+     *              (用于接收心跳)
      * @param ctx
      * @param textWebSocketFrame
      */
