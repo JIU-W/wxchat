@@ -22,7 +22,7 @@ public class HandlerHeartBeat extends ChannelDuplexHandler {
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
-            if (e.state() == IdleState.READER_IDLE) {//心跳超时
+            if (e.state() == IdleState.READER_IDLE) {//心跳超时：读超时
                 //获取用户id
                 Attribute<String> attribute = ctx.channel().attr(AttributeKey.valueOf(ctx.channel().id().toString()));
                 //获取通道属性的值：userId
@@ -31,7 +31,8 @@ public class HandlerHeartBeat extends ChannelDuplexHandler {
                 logger.info("用户{}没有发送心跳断开连接", userId);
                 //关闭通道(关闭当前Channel连接)
                 ctx.close();//也可以这样写： ctx.channel().close();   两者功能一样。
-            } else if (e.state() == IdleState.WRITER_IDLE) {
+            } else if (e.state() == IdleState.WRITER_IDLE) {//写超时
+                //发送心跳包
                 ctx.writeAndFlush("heart");
             }
         }
