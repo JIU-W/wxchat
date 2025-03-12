@@ -39,9 +39,9 @@ public class GlobalOperationAspect {
     @Before("@annotation(com.wxchat.annotation.GlobalInterceptor)")
     public void interceptorDo(JoinPoint point) {
         try {
-            //获取方法
+            //获取方法 (反射获取被拦截方法的 Method 对象)
             Method method = ((MethodSignature) point.getSignature()).getMethod();
-            //获取该方法的注解
+            //获取该方法的注解  (反射读取方法上的 @GlobalInterceptor 注解)
             GlobalInterceptor interceptor = method.getAnnotation(GlobalInterceptor.class);
             if (null == interceptor) {
                 return;
