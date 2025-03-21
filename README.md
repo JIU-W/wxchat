@@ -1,1 +1,2 @@
-即时通讯、在线聊天项目
+### 该项目对应前端代码
+https://github.com/JIU-W/wxchat-front
